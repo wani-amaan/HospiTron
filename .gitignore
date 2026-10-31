@@ -1,0 +1,27 @@
+# ==========================================
+# HospiTron - Git Ignore Rules
+# ==========================================
+
+# Compiled Java Bytecode
+*.class
+out/
+bin/
+
+# Temporary / Runtime Generated Data Files
+patients.txt
+doctors.txt
+appointments.txt
+data/
+
+# IDE / Editor Settings
+.idea/
+*.iml
+.vscode/
+.settings/
+.classpath
+.project
+
+# OS Metadata
+Thumbs.db
+Desktop.ini
+.DS_Store
