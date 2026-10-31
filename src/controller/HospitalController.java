@@ -80,4 +80,10 @@ public final class HospitalController {
     public String generateDetailedReceipt(int patientId, String name, int consultationFee, int testsCost, boolean emergency) {
         return service.generateDetailedReceipt(patientId, name, consultationFee, testsCost, emergency);
     }
+
+    // ---------------- DEMO SEEDER ----------------
+
+    public void loadAcademicDemoData() {
+        service.loadAcademicDemoData();
+    }
 }

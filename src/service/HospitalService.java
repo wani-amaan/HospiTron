@@ -116,4 +116,45 @@ public final class HospitalService {
     public int getEmergencyQueueSize() {
         return emergencyQueue.size();
     }
+
+    // ---------------- ACADEMIC DEMONSTRATION DATA SEEDER ----------------
+
+    public void loadAcademicDemoData() {
+        patients.clear();
+        patients.addAll(List.of(
+                new Patient(101, "Zubair Ahmad", 34),
+                new Patient(102, "Aamina Jan", 28),
+                new Patient(103, "Tariq Shah", 52),
+                new Patient(104, "Fatima Bano", 65),
+                new Patient(105, "John Doe (Foreign National)", 41)
+        ));
+        FileHandler.savePatients(patients);
+
+        doctors.clear();
+        doctors.addAll(List.of(
+                new Doctor(201, "Shahid Sultan", "Chief of Surgery / Trauma", true),
+                new Doctor(202, "Sobia Rashid", "Cardiology", true),
+                new Doctor(203, "Farooq Mir", "Neurology", true),
+                new Doctor(204, "Nadia Malik", "Emergency Medicine", true),
+                new Doctor(205, "Hilal Lone", "Orthopedics", true)
+        ));
+        FileHandler.saveDoctors(doctors);
+
+        appointments.clear();
+        appointments.addAll(List.of(
+                new Appointment(301, 101, 201, "CONFIRMED", "NORMAL", "31-10-2026", "10:00"),
+                new Appointment(302, 102, 201, "CONFIRMED", "NORMAL", "31-10-2026", "10:10"), // Overlaps 301
+                new Appointment(303, 103, 202, "CONFIRMED", "NORMAL", "31-10-2026", "10:30"),
+                new Appointment(304, 104, 203, "CONFIRMED", "NORMAL", "31-10-2026", "10:40"), // Overlaps 303
+                new Appointment(305, 105, 204, "CONFIRMED", "NORMAL", "31-10-2026", "11:00"),
+                new Appointment(306, 101, 205, "CONFIRMED", "NORMAL", "31-10-2026", "11:10"), // Overlaps 305
+                new Appointment(307, 102, 201, "CONFIRMED", "NORMAL", "31-10-2026", "11:30")
+        ));
+        FileHandler.saveAppointments(appointments);
+
+        emergencyQueue.clear();
+        emergencyQueue.offer(new EmergencyCase(103, "Tariq Shah (Mild Pain)", 4));
+        emergencyQueue.offer(new EmergencyCase(104, "Fatima Bano (Acute Trauma)", 9));
+        emergencyQueue.offer(new EmergencyCase(101, "Zubair Ahmad (Compound Fracture)", 7));
+    }
 }
