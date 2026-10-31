@@ -1,68 +1,77 @@
 package ui;
 
 import controller.HospitalController;
-import java.awt.*;
-import javax.swing.*;
+import java.awt.Color;
+import java.awt.Font;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
 import security.AuthService;
 
-public class LoginFrame extends JFrame {
+/**
+ * Modern Java login window with authentication verification.
+ */
+public final class LoginFrame extends JFrame {
 
-    private JTextField usernameField;
-    private JPasswordField passwordField;
-
+    private final JTextField usernameField;
+    private final JPasswordField passwordField;
     private final AuthService auth = new AuthService();
 
     public LoginFrame() {
-
-        setTitle("HospiTron Login");
-        setSize(350, 220);
+        setTitle("HospiTron Security Login");
+        setSize(360, 240);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(null);
+        getContentPane().setBackground(new Color(245, 248, 252));
 
-        JLabel title = new JLabel("HOSPITRON LOGIN");
+        var title = new JLabel("HOSPITRON LOGIN");
         title.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        title.setBounds(90, 10, 200, 30);
+        title.setBounds(95, 12, 200, 30);
         add(title);
 
-        JLabel userLabel = new JLabel("Username:");
-        userLabel.setBounds(30, 50, 100, 25);
+        var userLabel = new JLabel("Username:");
+        userLabel.setBounds(35, 55, 90, 25);
         add(userLabel);
 
-        usernameField = new JTextField();
-        usernameField.setBounds(120, 50, 160, 25);
+        usernameField = new JTextField("AMAAN");
+        usernameField.setBounds(130, 55, 170, 26);
         add(usernameField);
 
-        JLabel passLabel = new JLabel("Password:");
-        passLabel.setBounds(30, 85, 100, 25);
+        var passLabel = new JLabel("Password:");
+        passLabel.setBounds(35, 95, 90, 25);
         add(passLabel);
 
-        passwordField = new JPasswordField();
-        passwordField.setBounds(120, 85, 160, 25);
+        passwordField = new JPasswordField("12345");
+        passwordField.setBounds(130, 95, 170, 26);
         add(passwordField);
 
-        JButton loginBtn = new JButton("LOGIN");
-        loginBtn.setBounds(120, 130, 100, 30);
+        var loginBtn = new JButton("LOGIN");
+        loginBtn.setBounds(130, 145, 110, 32);
+        loginBtn.setBackground(new Color(41, 128, 185));
+        loginBtn.setForeground(Color.WHITE);
         add(loginBtn);
 
-        loginBtn.addActionListener(e -> {
-
-            String u = usernameField.getText();
-            String p = new String(passwordField.getPassword());
-
-            if (auth.login(u, p)) {
-
-                JOptionPane.showMessageDialog(this, "Login Successful");
-
-                new DashboardFrame(new HospitalController());
-
-                dispose();
-
-            } else {
-                JOptionPane.showMessageDialog(this, "Invalid Credentials");
-            }
-        });
+        // Bind both button click and Enter key
+        loginBtn.addActionListener(e -> attemptLogin());
+        passwordField.addActionListener(e -> attemptLogin());
 
         setVisible(true);
+    }
+
+    private void attemptLogin() {
+        var u = usernameField.getText();
+        var p = new String(passwordField.getPassword());
+
+        if (auth.login(u, p)) {
+            JOptionPane.showMessageDialog(this, "Authentication Successful. Welcome, " + u + "!", "HospiTron Security", JOptionPane.INFORMATION_MESSAGE);
+            new DashboardFrame(new HospitalController());
+            dispose();
+        } else {
+            JOptionPane.showMessageDialog(this, "Invalid credentials. Please verify your username and password.", "Authentication Failed", JOptionPane.ERROR_MESSAGE);
+        }
     }
 }

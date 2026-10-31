@@ -1,13 +1,27 @@
 package controller;
 
+import model.Appointment;
+import model.Doctor;
+import model.EmergencyCase;
+import model.Patient;
 import service.HospitalService;
-import model.*;
 
 import java.util.List;
 
-public class HospitalController {
+/**
+ * Modern Java controller orchestrating UI requests to service layer.
+ */
+public final class HospitalController {
 
-    private HospitalService service = new HospitalService();
+    private final HospitalService service;
+
+    public HospitalController() {
+        this(new HospitalService());
+    }
+
+    public HospitalController(HospitalService service) {
+        this.service = service;
+    }
 
     // ---------------- PATIENT ----------------
 

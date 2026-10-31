@@ -1,25 +1,19 @@
 package algorithm;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
-public class DijkstraRouting {
+/**
+ * Modern Java implementation of Dijkstra's Shortest Path Algorithm for hospital emergency routing.
+ */
+public final class DijkstraRouting {
 
     public static final int NO_EDGE = 0;
     public static final int INF = Integer.MAX_VALUE / 4;
 
-    public static class Result {
-        private final int source;
-        private final int[] distances;
-        private final int[] previous;
-
-        private Result(int source, int[] distances, int[] previous) {
-            this.source = source;
-            this.distances = distances;
-            this.previous = previous;
-        }
+    public record Result(int source, int[] distances, int[] previous) {
 
         public int getSource() {
             return source;
@@ -38,18 +32,18 @@ public class DijkstraRouting {
             }
 
             if (distances[destination] >= INF) {
-                return Collections.emptyList();
+                return List.of();
             }
 
-            LinkedList<Integer> path = new LinkedList<>();
+            var path = new ArrayList<Integer>();
             int current = destination;
 
             while (current != -1) {
-                path.addFirst(current);
+                path.addFirst(current); // Modern Java SequencedCollection method
                 current = previous[current];
             }
 
-            return path;
+            return Collections.unmodifiableList(path);
         }
 
         public int[] getDistancesCopy() {
@@ -62,9 +56,9 @@ public class DijkstraRouting {
         validateSource(graph, source);
 
         int n = graph.length;
-        int[] dist = new int[n];
-        int[] previous = new int[n];
-        boolean[] visited = new boolean[n];
+        var dist = new int[n];
+        var previous = new int[n];
+        var visited = new boolean[n];
 
         Arrays.fill(dist, INF);
         Arrays.fill(previous, -1);
@@ -72,15 +66,12 @@ public class DijkstraRouting {
 
         for (int i = 0; i < n - 1; i++) {
             int u = minDistance(dist, visited);
-            if (u == -1) {
-                break;
-            }
+            if (u == -1) break;
 
             visited[u] = true;
 
             for (int v = 0; v < n; v++) {
                 int weight = graph[u][v];
-
                 if (!visited[v] && weight > 0 && dist[u] < INF && dist[u] + weight < dist[v]) {
                     dist[v] = dist[u] + weight;
                     previous[v] = u;
@@ -96,16 +87,11 @@ public class DijkstraRouting {
     }
 
     public void printResult(int[][] graph, int source) {
-        Result result = shortestPath(graph, source);
-
+        var result = shortestPath(graph, source);
         System.out.println("\n--- SHORTEST DISTANCES FROM SOURCE " + source + " ---");
         for (int i = 0; i < graph.length; i++) {
             int distance = result.getDistanceTo(i);
-            if (distance >= INF) {
-                System.out.println("To node " + i + " = Unreachable");
-            } else {
-                System.out.println("To node " + i + " = " + distance);
-            }
+            System.out.println("To node " + i + " = " + (distance >= INF ? "Unreachable" : distance));
         }
     }
 

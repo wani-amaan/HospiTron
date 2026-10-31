@@ -2,64 +2,72 @@ package ui;
 
 import controller.HospitalController;
 import model.Patient;
+import util.ValidationUtil;
 
-import javax.swing.*;
-import java.awt.*;
-import java.util.List;
+import java.awt.Color;
+import java.awt.Font;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 
-public class PatientFrame extends JFrame {
+/**
+ * Modern Java Patient Management Frame.
+ */
+public final class PatientFrame extends JFrame {
 
-    private JTextField txtId;
-    private JTextField txtName;
-    private JTextField txtAge;
-
-    private HospitalController controller;
+    private final JTextField txtId;
+    private final JTextField txtName;
+    private final JTextField txtAge;
+    private final HospitalController controller;
 
     public PatientFrame(HospitalController controller) {
         this.controller = controller;
 
         setTitle("Patient Module - HOSPITRON");
-        setSize(500, 350);
+        setSize(500, 360);
         setLayout(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setLocationRelativeTo(null);
 
         getContentPane().setBackground(new Color(240, 248, 255));
 
-        JLabel title = new JLabel("PATIENT MANAGEMENT");
+        var title = new JLabel("PATIENT MANAGEMENT");
         title.setBounds(150, 20, 250, 30);
-        title.setFont(new Font("Arial", Font.BOLD, 16));
+        title.setFont(new Font("Segoe UI", Font.BOLD, 16));
         add(title);
 
-        JLabel lblId = new JLabel("ID:");
+        var lblId = new JLabel("ID:");
         lblId.setBounds(50, 70, 100, 25);
         add(lblId);
 
         txtId = new JTextField();
-        txtId.setBounds(150, 70, 200, 25);
+        txtId.setBounds(150, 70, 220, 26);
         add(txtId);
 
-        JLabel lblName = new JLabel("Name:");
+        var lblName = new JLabel("Name:");
         lblName.setBounds(50, 110, 100, 25);
         add(lblName);
 
         txtName = new JTextField();
-        txtName.setBounds(150, 110, 200, 25);
+        txtName.setBounds(150, 110, 220, 26);
         add(txtName);
 
-        JLabel lblAge = new JLabel("Age:");
+        var lblAge = new JLabel("Age:");
         lblAge.setBounds(50, 150, 100, 25);
         add(lblAge);
 
         txtAge = new JTextField();
-        txtAge.setBounds(150, 150, 200, 25);
+        txtAge.setBounds(150, 150, 220, 26);
         add(txtAge);
 
-        JButton btnAdd = new JButton("Add Patient");
-        btnAdd.setBounds(50, 200, 130, 30);
+        var btnAdd = new JButton("Add Patient");
+        btnAdd.setBounds(50, 210, 140, 32);
         add(btnAdd);
 
-        JButton btnView = new JButton("View Patients");
-        btnView.setBounds(200, 200, 130, 30);
+        var btnView = new JButton("View Patients");
+        btnView.setBounds(210, 210, 140, 32);
         add(btnView);
 
         btnAdd.addActionListener(e -> addPatient());
@@ -70,18 +78,18 @@ public class PatientFrame extends JFrame {
 
     private void addPatient() {
         try {
-            int id = Integer.parseInt(txtId.getText().trim());
-            String name = txtName.getText().trim();
-            int age = Integer.parseInt(txtAge.getText().trim());
+            int id = Integer.parseInt(txtId.getText().strip());
+            String name = txtName.getText().strip();
+            int age = Integer.parseInt(txtAge.getText().strip());
 
-            util.ValidationUtil.validateId(id);
-            util.ValidationUtil.validateName(name);
-            util.ValidationUtil.validateAge(age);
-            util.ValidationUtil.foreignerCheck(name);
+            ValidationUtil.validateId(id);
+            ValidationUtil.validateName(name);
+            ValidationUtil.validateAge(age);
+            ValidationUtil.foreignerCheck(name);
 
             controller.addPatient(id, name, age);
 
-            JOptionPane.showMessageDialog(this, "Patient Added Successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Patient #" + id + " (" + name + ") registered successfully.", "Registration Complete", JOptionPane.INFORMATION_MESSAGE);
 
             txtId.setText("");
             txtName.setText("");
@@ -95,18 +103,26 @@ public class PatientFrame extends JFrame {
     }
 
     private void viewPatients() {
-        List<Patient> list = controller.getAllPatients();
+        var list = controller.getAllPatients();
 
-        StringBuilder sb = new StringBuilder();
-
-        for (Patient p : list) {
-            sb.append("ID: ").append(p.getId())
-              .append(" | Name: ").append(p.getName())
-              .append(" | Age: ").append(p.getAge())
-              .append("\n");
+        if (list.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "No patients currently registered in system.", "Patient Records", JOptionPane.INFORMATION_MESSAGE);
+            return;
         }
 
-        JOptionPane.showMessageDialog(this,
-                sb.length() == 0 ? "No Patients Found" : sb.toString());
+        var sb = new StringBuilder("""
+                =================================================
+                            HOSPITRON REGISTERED PATIENTS
+                =================================================
+                """);
+
+        for (Patient p : list) {
+            sb.append(String.format("• ID: %-5d | Name: %-20s | Age: %d\n", p.id(), p.name(), p.age()));
+        }
+
+        sb.append("=================================================\n");
+        sb.append("Total Registered Patients: ").append(list.size());
+
+        JOptionPane.showMessageDialog(this, sb.toString(), "Registered Patients", JOptionPane.INFORMATION_MESSAGE);
     }
 }

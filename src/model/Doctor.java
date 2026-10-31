@@ -1,50 +1,25 @@
 package model;
 
-public class Doctor {
+/**
+ * Modern Java record representing a hospital doctor entity.
+ */
+public record Doctor(int id, String name, String specialization, boolean available) {
 
-    private int id;
-    private String name;
-    private String specialization;
-    private boolean available;
-
-    public Doctor(int id, String name, String specialization, boolean available) {
-        this.id = id;
-        this.name = name;
-        this.specialization = specialization;
-        this.available = available;
+    public Doctor {
+        if (id < 0) throw new IllegalArgumentException("Doctor ID cannot be negative.");
+        name = name != null ? name.strip() : "";
+        specialization = specialization != null ? specialization.strip() : "";
     }
 
-    public int getId() {
-        return id;
+    public Doctor withAvailable(boolean newAvailability) {
+        return new Doctor(id, name, specialization, newAvailability);
     }
 
-    public void setId(int id) { 
-        this.id = id; 
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) { 
-        this.name = name; 
-    }
-
-    public String getSpecialization() {
-        return specialization;
-    }
-
-    public void setSpecialization(String specialization) { 
-        this.specialization = specialization; 
-    }
-
-    public boolean isAvailable() {
-        return available;
-    }
-
-    public void setAvailable(boolean available) {
-        this.available = available;
-    }
+    // JavaBean getter aliases
+    public int getId() { return id; }
+    public String getName() { return name; }
+    public String getSpecialization() { return specialization; }
+    public boolean isAvailable() { return available; }
 
     @Override
     public String toString() {

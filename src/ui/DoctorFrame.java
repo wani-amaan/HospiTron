@@ -2,64 +2,72 @@ package ui;
 
 import controller.HospitalController;
 import model.Doctor;
+import util.ValidationUtil;
 
-import javax.swing.*;
-import java.awt.*;
-import java.util.List;
+import java.awt.Color;
+import java.awt.Font;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 
-public class DoctorFrame extends JFrame {
+/**
+ * Modern Java Doctor Management Frame.
+ */
+public final class DoctorFrame extends JFrame {
 
-    private JTextField txtId;
-    private JTextField txtName;
-    private JTextField txtSpec;
-
-    private HospitalController controller;
+    private final JTextField txtId;
+    private final JTextField txtName;
+    private final JTextField txtSpec;
+    private final HospitalController controller;
 
     public DoctorFrame(HospitalController controller) {
         this.controller = controller;
 
         setTitle("Doctor Module - HOSPITRON");
-        setSize(500, 350);
+        setSize(500, 360);
         setLayout(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setLocationRelativeTo(null);
 
         getContentPane().setBackground(new Color(240, 248, 255));
 
-        JLabel title = new JLabel("DOCTOR MANAGEMENT");
+        var title = new JLabel("DOCTOR MANAGEMENT");
         title.setBounds(150, 20, 250, 30);
-        title.setFont(new Font("Arial", Font.BOLD, 16));
+        title.setFont(new Font("Segoe UI", Font.BOLD, 16));
         add(title);
 
-        JLabel lblId = new JLabel("ID:");
+        var lblId = new JLabel("ID:");
         lblId.setBounds(50, 70, 100, 25);
         add(lblId);
 
         txtId = new JTextField();
-        txtId.setBounds(150, 70, 200, 25);
+        txtId.setBounds(160, 70, 220, 26);
         add(txtId);
 
-        JLabel lblName = new JLabel("Name:");
+        var lblName = new JLabel("Name:");
         lblName.setBounds(50, 110, 100, 25);
         add(lblName);
 
         txtName = new JTextField();
-        txtName.setBounds(150, 110, 200, 25);
+        txtName.setBounds(160, 110, 220, 26);
         add(txtName);
 
-        JLabel lblSpec = new JLabel("Specialization:");
+        var lblSpec = new JLabel("Specialization:");
         lblSpec.setBounds(50, 150, 120, 25);
         add(lblSpec);
 
         txtSpec = new JTextField();
-        txtSpec.setBounds(150, 150, 200, 25);
+        txtSpec.setBounds(160, 150, 220, 26);
         add(txtSpec);
 
-        JButton btnAdd = new JButton("Add Doctor");
-        btnAdd.setBounds(50, 200, 130, 30);
+        var btnAdd = new JButton("Add Doctor");
+        btnAdd.setBounds(50, 210, 140, 32);
         add(btnAdd);
 
-        JButton btnView = new JButton("View Doctors");
-        btnView.setBounds(200, 200, 130, 30);
+        var btnView = new JButton("View Doctors");
+        btnView.setBounds(210, 210, 140, 32);
         add(btnView);
 
         btnAdd.addActionListener(e -> addDoctor());
@@ -70,19 +78,19 @@ public class DoctorFrame extends JFrame {
 
     private void addDoctor() {
         try {
-            int id = Integer.parseInt(txtId.getText().trim());
-            String name = txtName.getText().trim();
-            String spec = txtSpec.getText().trim();
+            int id = Integer.parseInt(txtId.getText().strip());
+            String name = txtName.getText().strip();
+            String spec = txtSpec.getText().strip();
 
-            util.ValidationUtil.validateId(id);
-            util.ValidationUtil.validateName(name);
-            if (spec.isEmpty()) {
-                throw new IllegalArgumentException("Specialization cannot be empty.");
+            ValidationUtil.validateId(id);
+            ValidationUtil.validateName(name);
+            if (spec.isBlank()) {
+                throw new IllegalArgumentException("Specialization cannot be blank.");
             }
 
             controller.addDoctor(id, name, spec);
 
-            JOptionPane.showMessageDialog(this, "Doctor Added Successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Dr. " + name + " (" + spec + ") added successfully.", "Doctor Registered", JOptionPane.INFORMATION_MESSAGE);
 
             txtId.setText("");
             txtName.setText("");
@@ -96,18 +104,27 @@ public class DoctorFrame extends JFrame {
     }
 
     private void viewDoctors() {
-        List<Doctor> list = controller.getAllDoctors();
+        var list = controller.getAllDoctors();
 
-        StringBuilder sb = new StringBuilder();
-
-        for (Doctor d : list) {
-            sb.append("ID: ").append(d.getId())
-              .append(" | Name: ").append(d.getName())
-              .append(" | Spec: ").append(d.getSpecialization())
-              .append("\n");
+        if (list.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "No doctors registered in the system.", "Doctor Records", JOptionPane.INFORMATION_MESSAGE);
+            return;
         }
 
-        JOptionPane.showMessageDialog(this,
-                sb.length() == 0 ? "No Doctors Found" : sb.toString());
+        var sb = new StringBuilder("""
+                =================================================================
+                                  HOSPITRON MEDICAL FACULTY
+                =================================================================
+                """);
+
+        for (Doctor d : list) {
+            sb.append(String.format("• ID: %-5d | Dr. %-20s | Spec: %-18s | Available: %s\n",
+                    d.id(), d.name(), d.specialization(), (d.available() ? "YES" : "NO")));
+        }
+
+        sb.append("=================================================================\n");
+        sb.append("Total Medical Staff: ").append(list.size());
+
+        JOptionPane.showMessageDialog(this, sb.toString(), "Hospital Doctors", JOptionPane.INFORMATION_MESSAGE);
     }
 }

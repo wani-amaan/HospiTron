@@ -4,23 +4,39 @@ import controller.HospitalController;
 import model.Patient;
 import util.ValidationUtil;
 
-import javax.swing.*;
-import java.awt.*;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.util.List;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
-public class BillingFrame extends JFrame {
+/**
+ * Modern Java Billing & Invoice Frame.
+ */
+public final class BillingFrame extends JFrame {
 
-    private JTextField txtPID;
-    private JTextField txtName;
-    private JTextField txtConsultation;
-    private JTextField txtTests;
-    private JCheckBox chkEmergency;
-    private JTextArea txtReceipt;
-
-    private HospitalController controller;
+    private final JTextField txtPID;
+    private final JTextField txtName;
+    private final JTextField txtConsultation;
+    private final JTextField txtTests;
+    private final JCheckBox chkEmergency;
+    private final JTextArea txtReceipt;
+    private final HospitalController controller;
 
     public BillingFrame(HospitalController controller) {
         this.controller = controller;
@@ -32,21 +48,21 @@ public class BillingFrame extends JFrame {
         setLocationRelativeTo(null);
 
         // Header Panel
-        JPanel pnlHeader = new JPanel();
+        var pnlHeader = new JPanel();
         pnlHeader.setBackground(new Color(41, 128, 185));
-        JLabel lblTitle = new JLabel("HOSPITRON BILLING & INVOICE SYSTEM");
+        var lblTitle = new JLabel("HOSPITRON BILLING & INVOICE SYSTEM");
         lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 16));
         lblTitle.setForeground(Color.WHITE);
         pnlHeader.add(lblTitle);
         add(pnlHeader, BorderLayout.NORTH);
 
-        // Main Center Panel with Left Controls and Right Receipt
-        JPanel pnlCenter = new JPanel(new GridLayout(1, 2, 12, 10));
+        // Main Center Panel
+        var pnlCenter = new JPanel(new GridLayout(1, 2, 12, 10));
         pnlCenter.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
         pnlCenter.setBackground(new Color(245, 248, 252));
 
         // Form Panel
-        JPanel pnlForm = new JPanel();
+        var pnlForm = new JPanel();
         pnlForm.setLayout(new BoxLayout(pnlForm, BoxLayout.Y_AXIS));
         pnlForm.setOpaque(false);
 
@@ -55,7 +71,7 @@ public class BillingFrame extends JFrame {
         pnlForm.add(txtPID);
         pnlForm.add(Box.createVerticalStrut(8));
 
-        JButton btnAutoFill = new JButton("🔍 Auto-Lookup Patient Name");
+        var btnAutoFill = new JButton("🔍 Auto-Lookup Patient Name");
         btnAutoFill.setFont(new Font("Segoe UI", Font.PLAIN, 11));
         btnAutoFill.addActionListener(e -> lookupPatientName());
         pnlForm.add(btnAutoFill);
@@ -83,14 +99,14 @@ public class BillingFrame extends JFrame {
         pnlForm.add(chkEmergency);
         pnlForm.add(Box.createVerticalStrut(15));
 
-        JButton btnGenerate = new JButton("⚡ Generate Detailed Invoice");
+        var btnGenerate = new JButton("⚡ Generate Detailed Invoice");
         btnGenerate.setBackground(new Color(41, 128, 185));
         btnGenerate.setForeground(Color.WHITE);
         btnGenerate.addActionListener(e -> generateInvoice());
         pnlForm.add(btnGenerate);
         pnlForm.add(Box.createVerticalStrut(8));
 
-        JButton btnExport = new JButton("💾 Export Invoice to File");
+        var btnExport = new JButton("💾 Export Invoice to File");
         btnExport.setBackground(new Color(39, 174, 96));
         btnExport.setForeground(Color.WHITE);
         btnExport.addActionListener(e -> exportInvoice());
@@ -102,17 +118,18 @@ public class BillingFrame extends JFrame {
         txtReceipt = new JTextArea();
         txtReceipt.setEditable(false);
         txtReceipt.setFont(new Font("Consolas", Font.PLAIN, 11));
-        txtReceipt.setBackground(new Color(255, 255, 255));
-        txtReceipt.setText("Enter billing parameters on the left and click 'Generate Detailed Invoice'.\n\n" +
-                "Itemized breakdown will display:\n" +
-                "• Consultation charges\n" +
-                "• Diagnostic/Laboratory test costs\n" +
-                "• Critical care emergency surcharges (50%)\n" +
-                "• Final calculated total");
+        txtReceipt.setBackground(Color.WHITE);
+        txtReceipt.setText("""
+                Enter billing parameters on the left and click 'Generate Detailed Invoice'.
 
-        JScrollPane scrollPane = new JScrollPane(txtReceipt);
-        pnlCenter.add(scrollPane);
+                Itemized breakdown will display:
+                • Doctor Consultation charges
+                • Diagnostic / Laboratory test costs
+                • Critical care emergency surcharges (50%)
+                • Final calculated total amount
+                """);
 
+        pnlCenter.add(new JScrollPane(txtReceipt));
         add(pnlCenter, BorderLayout.CENTER);
 
         setVisible(true);
@@ -120,16 +137,17 @@ public class BillingFrame extends JFrame {
 
     private void lookupPatientName() {
         try {
-            int pid = Integer.parseInt(txtPID.getText().trim());
-            List<Patient> patients = controller.getAllPatients();
-            for (Patient p : patients) {
-                if (p.getId() == pid) {
-                    txtName.setText(p.getName());
-                    JOptionPane.showMessageDialog(this, "Found patient: " + p.getName(), "Patient Match", JOptionPane.INFORMATION_MESSAGE);
-                    return;
-                }
+            int pid = Integer.parseInt(txtPID.getText().strip());
+            var match = controller.getAllPatients().stream()
+                    .filter(p -> p.id() == pid)
+                    .findFirst();
+
+            if (match.isPresent()) {
+                txtName.setText(match.get().name());
+                JOptionPane.showMessageDialog(this, "Found patient: " + match.get().name(), "Patient Match", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "No registered patient with ID " + pid + ". You can enter the name manually.", "Lookup", JOptionPane.INFORMATION_MESSAGE);
             }
-            JOptionPane.showMessageDialog(this, "No registered patient with ID " + pid + ". You can enter the name manually.", "Lookup", JOptionPane.INFORMATION_MESSAGE);
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Please enter a valid numeric Patient ID first.", "Invalid ID", JOptionPane.WARNING_MESSAGE);
         }
@@ -137,10 +155,10 @@ public class BillingFrame extends JFrame {
 
     private void generateInvoice() {
         try {
-            int pid = Integer.parseInt(txtPID.getText().trim());
-            String name = txtName.getText().trim();
-            int consultation = Integer.parseInt(txtConsultation.getText().trim());
-            int tests = Integer.parseInt(txtTests.getText().trim());
+            int pid = Integer.parseInt(txtPID.getText().strip());
+            String name = txtName.getText().strip();
+            int consultation = Integer.parseInt(txtConsultation.getText().strip());
+            int tests = Integer.parseInt(txtTests.getText().strip());
             boolean emergency = chkEmergency.isSelected();
 
             ValidationUtil.validateId(pid);
@@ -150,7 +168,7 @@ public class BillingFrame extends JFrame {
                 throw new IllegalArgumentException("Cost values cannot be negative.");
             }
 
-            String receipt = controller.generateDetailedReceipt(pid, name, consultation, tests, emergency);
+            var receipt = controller.generateDetailedReceipt(pid, name, consultation, tests, emergency);
             txtReceipt.setText(receipt);
 
         } catch (IllegalArgumentException ex) {
@@ -162,24 +180,22 @@ public class BillingFrame extends JFrame {
 
     private void exportInvoice() {
         try {
-            String content = txtReceipt.getText().trim();
+            var content = txtReceipt.getText().strip();
             if (content.isEmpty() || !content.contains("OFFICIAL MEDICAL INVOICE")) {
                 JOptionPane.showMessageDialog(this, "Please generate an invoice first before exporting.", "No Invoice", JOptionPane.WARNING_MESSAGE);
                 return;
             }
 
-            int pid = Integer.parseInt(txtPID.getText().trim());
-            File dataDir = new File("data");
-            if (!dataDir.exists()) dataDir.mkdirs();
+            int pid = Integer.parseInt(txtPID.getText().strip());
+            var dataDir = Path.of("data");
+            if (!Files.exists(dataDir)) Files.createDirectories(dataDir);
 
-            File outFile = new File(dataDir, "invoice_patient_" + pid + ".txt");
-            try (BufferedWriter bw = new BufferedWriter(new FileWriter(outFile))) {
-                bw.write(content);
-            }
+            var outFile = dataDir.resolve("invoice_patient_" + pid + ".txt");
+            Files.writeString(outFile, content, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 
-            JOptionPane.showMessageDialog(this, "Invoice exported successfully to:\n" + outFile.getAbsolutePath(), "Invoice Saved", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Invoice exported successfully to:\n" + outFile.toAbsolutePath(), "Invoice Saved", JOptionPane.INFORMATION_MESSAGE);
 
-        } catch (Exception ex) {
+        } catch (IOException ex) {
             JOptionPane.showMessageDialog(this, "Error exporting invoice: " + ex.getMessage(), "Export Error", JOptionPane.ERROR_MESSAGE);
         }
     }

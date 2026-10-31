@@ -1,29 +1,37 @@
 package main;
 
-import java.awt.*;
-import javax.swing.*;
+import java.awt.Color;
+import java.awt.Font;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import ui.LoginFrame;
 
-public class Main {
+/**
+ * HospiTron Application Entry Point - Target Java 27 LTS Runtime.
+ */
+public final class Main {
+
+    private Main() {}
 
     public static void main(String[] args) {
-
         SwingUtilities.invokeLater(() -> {
-
             try {
                 UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
             } catch (Exception ignored) {}
 
-            // ================= GLOBAL THEME =================
+            // ================= GLOBAL MODERN HEALTHCARE THEME =================
+            final var bgLight = new Color(245, 248, 252);
+            final var primaryBlue = new Color(52, 152, 219);
+            final var focusBlue = new Color(41, 128, 185);
 
-            UIManager.put("control", new Color(245, 248, 252)); // background
-            UIManager.put("nimbusBase", new Color(52, 152, 219)); // blue
-            UIManager.put("nimbusFocus", new Color(41, 128, 185));
+            UIManager.put("control", bgLight);
+            UIManager.put("nimbusBase", primaryBlue);
+            UIManager.put("nimbusFocus", focusBlue);
 
-            UIManager.put("OptionPane.background", new Color(245, 248, 252));
-            UIManager.put("Panel.background", new Color(245, 248, 252));
+            UIManager.put("OptionPane.background", bgLight);
+            UIManager.put("Panel.background", bgLight);
 
-            UIManager.put("Button.background", new Color(41, 128, 185));
+            UIManager.put("Button.background", focusBlue);
             UIManager.put("Button.foreground", Color.WHITE);
 
             UIManager.put("Button.font", new Font("Segoe UI", Font.BOLD, 13));

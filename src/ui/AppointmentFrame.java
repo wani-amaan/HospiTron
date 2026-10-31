@@ -2,20 +2,27 @@ package ui;
 
 import controller.HospitalController;
 import model.Appointment;
+import util.ValidationUtil;
 
-import javax.swing.*;
-import java.awt.*;
-import java.util.List;
+import java.awt.Color;
+import java.awt.Font;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 
-public class AppointmentFrame extends JFrame {
+/**
+ * Modern Java Appointment Management & Interval Scheduling Frame.
+ */
+public final class AppointmentFrame extends JFrame {
 
-    private JTextField txtAID;
-    private JTextField txtPID;
-    private JTextField txtDID;
-    private JTextField txtDate;
-    private JTextField txtTime;
-
-    private HospitalController controller;
+    private final JTextField txtAID;
+    private final JTextField txtPID;
+    private final JTextField txtDID;
+    private final JTextField txtDate;
+    private final JTextField txtTime;
+    private final HospitalController controller;
 
     public AppointmentFrame(HospitalController controller) {
         this.controller = controller;
@@ -24,63 +31,64 @@ public class AppointmentFrame extends JFrame {
         setSize(520, 440);
         setLayout(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setLocationRelativeTo(null);
 
         getContentPane().setBackground(new Color(235, 245, 255));
 
-        JLabel title = new JLabel("APPOINTMENT MANAGEMENT");
+        var title = new JLabel("APPOINTMENT MANAGEMENT");
         title.setBounds(130, 15, 300, 25);
-        title.setFont(new Font("Arial", Font.BOLD, 16));
+        title.setFont(new Font("Segoe UI", Font.BOLD, 16));
         add(title);
 
-        JLabel l1 = new JLabel("Appointment ID:");
+        var l1 = new JLabel("Appointment ID:");
         l1.setBounds(50, 60, 120, 25);
         add(l1);
 
         txtAID = new JTextField();
-        txtAID.setBounds(180, 60, 250, 25);
+        txtAID.setBounds(180, 60, 250, 26);
         add(txtAID);
 
-        JLabel l2 = new JLabel("Patient ID:");
+        var l2 = new JLabel("Patient ID:");
         l2.setBounds(50, 100, 120, 25);
         add(l2);
 
         txtPID = new JTextField();
-        txtPID.setBounds(180, 100, 250, 25);
+        txtPID.setBounds(180, 100, 250, 26);
         add(txtPID);
 
-        JLabel l3 = new JLabel("Doctor ID:");
+        var l3 = new JLabel("Doctor ID:");
         l3.setBounds(50, 140, 120, 25);
         add(l3);
 
         txtDID = new JTextField();
-        txtDID.setBounds(180, 140, 250, 25);
+        txtDID.setBounds(180, 140, 250, 26);
         add(txtDID);
 
-        JLabel l4 = new JLabel("Date (dd-MM-yyyy):");
+        var l4 = new JLabel("Date (dd-MM-yyyy):");
         l4.setBounds(50, 180, 130, 25);
         add(l4);
 
         txtDate = new JTextField("31-10-2026");
-        txtDate.setBounds(180, 180, 250, 25);
+        txtDate.setBounds(180, 180, 250, 26);
         add(txtDate);
 
-        JLabel l5 = new JLabel("Time (HH:mm):");
+        var l5 = new JLabel("Time (HH:mm):");
         l5.setBounds(50, 220, 120, 25);
         add(l5);
 
         txtTime = new JTextField("10:00");
-        txtTime.setBounds(180, 220, 250, 25);
+        txtTime.setBounds(180, 220, 250, 26);
         add(txtTime);
 
-        JButton btnBook = new JButton("Book Appointment");
+        var btnBook = new JButton("Book Appointment");
         btnBook.setBounds(50, 275, 180, 32);
         add(btnBook);
 
-        JButton btnView = new JButton("View Appointments");
+        var btnView = new JButton("View Appointments");
         btnView.setBounds(250, 275, 180, 32);
         add(btnView);
 
-        JButton btnOptimize = new JButton("⚡ Optimize Schedule (Interval Scheduling)");
+        var btnOptimize = new JButton("⚡ Optimize Schedule (Interval Scheduling)");
         btnOptimize.setBounds(70, 325, 340, 34);
         btnOptimize.setBackground(new Color(46, 125, 50));
         btnOptimize.setForeground(Color.WHITE);
@@ -95,25 +103,25 @@ public class AppointmentFrame extends JFrame {
 
     private void bookAppointment() {
         try {
-            int aid = Integer.parseInt(txtAID.getText().trim());
-            int pid = Integer.parseInt(txtPID.getText().trim());
-            int did = Integer.parseInt(txtDID.getText().trim());
-            String date = txtDate.getText().trim();
-            String time = txtTime.getText().trim();
+            int aid = Integer.parseInt(txtAID.getText().strip());
+            int pid = Integer.parseInt(txtPID.getText().strip());
+            int did = Integer.parseInt(txtDID.getText().strip());
+            String date = txtDate.getText().strip();
+            String time = txtTime.getText().strip();
 
-            util.ValidationUtil.validateId(aid);
-            util.ValidationUtil.validateId(pid);
-            util.ValidationUtil.validateId(did);
+            ValidationUtil.validateId(aid);
+            ValidationUtil.validateId(pid);
+            ValidationUtil.validateId(did);
 
-            if (date.isEmpty() || time.isEmpty()) {
-                throw new IllegalArgumentException("Date and Time cannot be empty.");
+            if (date.isBlank() || time.isBlank()) {
+                throw new IllegalArgumentException("Date and Time cannot be blank.");
             }
 
             controller.bookAppointment(pid, did, aid, date, time);
 
             JOptionPane.showMessageDialog(this,
-                    "Appointment #" + aid + " Booked Successfully for " + date + " at " + time,
-                    "Success", JOptionPane.INFORMATION_MESSAGE);
+                    "Appointment #" + aid + " booked successfully for " + date + " at " + time + ".",
+                    "Booking Confirmed", JOptionPane.INFORMATION_MESSAGE);
 
             txtAID.setText("");
             txtPID.setText("");
@@ -128,28 +136,33 @@ public class AppointmentFrame extends JFrame {
     }
 
     private void viewAppointments() {
-        List<Appointment> list = controller.getAllAppointments();
+        var list = controller.getAllAppointments();
 
-        StringBuilder sb = new StringBuilder();
-
-        for (Appointment a : list) {
-            sb.append("AID: ").append(a.getAppointmentId())
-              .append(" | PID: ").append(a.getPatientId())
-              .append(" | DID: ").append(a.getDoctorId())
-              .append(" | Date: ").append(a.getDate())
-              .append(" ").append(a.getTime())
-              .append(" | Status: ").append(a.getStatus())
-              .append("\n");
+        if (list.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "No appointments currently on record.", "Appointment Records", JOptionPane.INFORMATION_MESSAGE);
+            return;
         }
 
-        JOptionPane.showMessageDialog(this,
-                sb.length() == 0 ? "No Appointments Found" : sb.toString(),
-                "All Appointments", JOptionPane.INFORMATION_MESSAGE);
+        var sb = new StringBuilder("""
+                ========================================================================
+                                     HOSPITRON BOOKED APPOINTMENTS
+                ========================================================================
+                """);
+
+        for (Appointment a : list) {
+            sb.append(String.format("• Appt #%-5d | Patient ID: %-5d | Doctor ID: %-5d | Slot: %s %s | Status: %s\n",
+                    a.appointmentId(), a.patientId(), a.doctorId(), a.date(), a.time(), a.status()));
+        }
+
+        sb.append("========================================================================\n");
+        sb.append("Total Appointments: ").append(list.size());
+
+        JOptionPane.showMessageDialog(this, sb.toString(), "All Appointments", JOptionPane.INFORMATION_MESSAGE);
     }
 
     private void optimizeSchedule() {
         try {
-            List<Appointment> optimized = controller.getOptimizedAppointments();
+            var optimized = controller.getOptimizedAppointments();
 
             if (optimized.isEmpty()) {
                 JOptionPane.showMessageDialog(this,
@@ -158,19 +171,26 @@ public class AppointmentFrame extends JFrame {
                 return;
             }
 
-            StringBuilder sb = new StringBuilder();
-            sb.append("INTERVAL SCHEDULING (GREEDY OPTIMIZATION)\n");
-            sb.append("Mutually compatible, conflict-free appointment schedule:\n");
-            sb.append("====================================================\n\n");
+            var sb = new StringBuilder("""
+                    ========================================================================
+                                    INTERVAL SCHEDULING (GREEDY OPTIMIZATION)
+                    ========================================================================
+                    Mutually compatible, conflict-free appointment schedule:
+
+                    """);
 
             for (Appointment a : optimized) {
-                sb.append("• Slot: ").append(a.getDate()).append(" ").append(a.getTime())
-                  .append(" -> Appointment #").append(a.getAppointmentId())
-                  .append(" (Patient ID: ").append(a.getPatientId())
-                  .append(", Doctor ID: ").append(a.getDoctorId()).append(")\n");
+                sb.append(String.format("✔ Slot: %s %-5s -> Appt #%-5d (Patient ID: %-5d, Doctor ID: %-5d)\n",
+                        a.date(), a.time(), a.appointmentId(), a.patientId(), a.doctorId()));
             }
 
-            sb.append("\nTotal Optimized Non-Overlapping Slots: ").append(optimized.size());
+            sb.append("""
+
+                    ------------------------------------------------------------------------
+                    Algorithm: Greedy Activity/Interval Selection (O(N log N) Sorting by finish time)
+                    Optimal Non-Overlapping Slots Scheduled: %d
+                    ========================================================================
+                    """.formatted(optimized.size()));
 
             JOptionPane.showMessageDialog(this, sb.toString(), "Optimal Conflict-Free Schedule", JOptionPane.INFORMATION_MESSAGE);
 

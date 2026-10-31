@@ -27,9 +27,9 @@ if not exist out mkdir out
 echo ✔ Directories ready
 
 echo.
-echo [3/4] Compiling project...
+echo [2/3] Compiling project (Java 27)...
 
-javac -d out ^
+javac --release 27 -d out ^
 src\main\Main.java ^
 src\ui\*.java ^
 src\controller\*.java ^

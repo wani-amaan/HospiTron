@@ -1,40 +1,20 @@
 package model;
 
-public class Patient {
+/**
+ * Modern Java record representing a hospital patient entity.
+ * Provides compact constructor validation, immutability, and legacy getter compatibility.
+ */
+public record Patient(int id, String name, int age) {
 
-    private int id;
-    private String name;
-    private int age;
-
-    public Patient(int id, String name, int age) {
-        this.id = id;
-        this.name = name;
-        this.age = age;
+    public Patient {
+        if (id < 0) throw new IllegalArgumentException("Patient ID cannot be negative.");
+        name = name != null ? name.strip() : "";
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) { 
-        this.id = id; 
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) { 
-        this.name = name; 
-    }
-
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(int age) { 
-        this.age = age; 
-    }
+    // JavaBean getter aliases for backward compatibility
+    public int getId() { return id; }
+    public String getName() { return name; }
+    public int getAge() { return age; }
 
     @Override
     public String toString() {

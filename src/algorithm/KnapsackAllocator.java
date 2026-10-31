@@ -4,17 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class KnapsackAllocator {
+/**
+ * Modern Java 0/1 Knapsack Dynamic Programming Allocator for hospital equipment and resources.
+ */
+public final class KnapsackAllocator {
 
-    public static class Result {
-        private final int maxBenefit;
-        private final List<Integer> selectedItems;
-
-        private Result(int maxBenefit, List<Integer> selectedItems) {
-            this.maxBenefit = maxBenefit;
-            this.selectedItems = selectedItems;
-        }
-
+    public record Result(int maxBenefit, List<Integer> selectedItems) {
         public int getMaxBenefit() {
             return maxBenefit;
         }
@@ -26,7 +21,7 @@ public class KnapsackAllocator {
 
     public int maximizeBenefit(int capacity, int[] weight, int[] value, int n) {
         validateInput(capacity, weight, value, n);
-        return maximizeBenefitInternal(capacity, weight, value, n).getMaxBenefit();
+        return maximizeBenefitInternal(capacity, weight, value, n).maxBenefit();
     }
 
     public Result maximizeBenefitWithSelection(int capacity, int[] weight, int[] value) {
@@ -35,7 +30,7 @@ public class KnapsackAllocator {
     }
 
     private Result maximizeBenefitInternal(int capacity, int[] weight, int[] value, int n) {
-        int[][] dp = new int[n + 1][capacity + 1];
+        var dp = new int[n + 1][capacity + 1];
 
         for (int i = 1; i <= n; i++) {
             for (int w = 0; w <= capacity; w++) {
@@ -50,12 +45,12 @@ public class KnapsackAllocator {
             }
         }
 
-        ArrayList<Integer> selected = new ArrayList<>();
+        var selected = new ArrayList<Integer>();
         int w = capacity;
 
         for (int i = n; i > 0 && w > 0; i--) {
             if (dp[i][w] != dp[i - 1][w]) {
-                selected.add(0, i - 1);
+                selected.addFirst(i - 1); // SequencedCollection method
                 w -= weight[i - 1];
             }
         }

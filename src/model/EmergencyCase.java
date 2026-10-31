@@ -1,40 +1,20 @@
 package model;
 
-public class EmergencyCase {
+/**
+ * Modern Java record representing an emergency hospital patient case.
+ */
+public record EmergencyCase(int patientId, String name, int severity) {
 
-    private int patientId;
-    private String name;
-    private int severity;
-
-    public EmergencyCase(int patientId, String name, int severity) {
-        this.patientId = patientId;
-        this.name = name;
-        this.severity = severity;
+    public EmergencyCase {
+        if (patientId < 0) throw new IllegalArgumentException("Patient ID cannot be negative.");
+        name = name != null ? name.strip() : "";
+        if (severity < 1 || severity > 10) throw new IllegalArgumentException("Severity must be 1-10.");
     }
 
-    public int getPatientId() {
-        return patientId;
-    }
-
-    public void setPatientId(int patientId) { 
-        this.patientId = patientId; 
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) { 
-        this.name = name; 
-    }
-
-    public int getSeverity() {
-        return severity;
-    }
-
-    public void setSeverity(int severity) { 
-        this.severity = severity; 
-    }
+    // JavaBean getter aliases
+    public int getPatientId() { return patientId; }
+    public String getName() { return name; }
+    public int getSeverity() { return severity; }
 
     @Override
     public String toString() {

@@ -4,41 +4,44 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import model.Appointment;
 
-public class GreedyScheduler {
+/**
+ * Modern Java Greedy Scheduler for conflict-free doctor-patient slots.
+ */
+public final class GreedyScheduler {
 
-    private static final DateTimeFormatter[] FORMATTERS = new DateTimeFormatter[] {
+    private static final List<DateTimeFormatter> FORMATTERS = List.of(
             DateTimeFormatter.ofPattern("dd-MM-uuuu HH:mm"),
             DateTimeFormatter.ofPattern("dd/MM/uuuu HH:mm")
-    };
+    );
+
+    public record AppointmentWrapper(Appointment appointment, LocalDateTime dateTime) {}
 
     public ArrayList<Appointment> schedule(ArrayList<Appointment> list) {
-        ArrayList<Appointment> result = new ArrayList<>();
+        var result = new ArrayList<Appointment>();
         if (list == null || list.isEmpty()) {
             return result;
         }
 
-        List<AppointmentWrapper> wrapped = new ArrayList<>();
-        for (Appointment a : list) {
+        var wrapped = new ArrayList<AppointmentWrapper>();
+        for (var a : list) {
             wrapped.add(new AppointmentWrapper(a, parseDateTime(a)));
         }
 
-        Collections.sort(wrapped, Comparator
-                .comparing(AppointmentWrapper::getDateTime)
-                .thenComparingInt(w -> w.getAppointment().getAppointmentId()));
+        wrapped.sort(Comparator
+                .comparing(AppointmentWrapper::dateTime)
+                .thenComparingInt(w -> w.appointment().appointmentId()));
 
-        Set<String> usedSlots = new HashSet<>();
+        var usedSlots = new HashSet<String>();
 
-        for (AppointmentWrapper wrapper : wrapped) {
-            String slotKey = wrapper.getDateTime().toString();
+        for (var wrapper : wrapped) {
+            var slotKey = wrapper.dateTime().toString();
             if (usedSlots.add(slotKey)) {
-                result.add(wrapper.getAppointment());
+                result.add(wrapper.appointment());
             }
         }
 
@@ -46,9 +49,9 @@ public class GreedyScheduler {
     }
 
     private LocalDateTime parseDateTime(Appointment appointment) {
-        String combined = appointment.getDate().trim() + " " + appointment.getTime().trim();
+        var combined = appointment.date().strip() + " " + appointment.time().strip();
 
-        for (DateTimeFormatter formatter : FORMATTERS) {
+        for (var formatter : FORMATTERS) {
             try {
                 return LocalDateTime.parse(combined, formatter);
             } catch (DateTimeParseException ignored) {
@@ -56,25 +59,7 @@ public class GreedyScheduler {
         }
 
         throw new IllegalArgumentException(
-                "Invalid appointment date/time format for Appointment ID " + appointment.getAppointmentId()
+                "Invalid appointment date/time format for Appointment ID " + appointment.appointmentId()
         );
-    }
-
-    private static class AppointmentWrapper {
-        private final Appointment appointment;
-        private final LocalDateTime dateTime;
-
-        private AppointmentWrapper(Appointment appointment, LocalDateTime dateTime) {
-            this.appointment = appointment;
-            this.dateTime = dateTime;
-        }
-
-        private Appointment getAppointment() {
-            return appointment;
-        }
-
-        private LocalDateTime getDateTime() {
-            return dateTime;
-        }
     }
 }

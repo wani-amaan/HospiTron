@@ -1,17 +1,26 @@
 package service;
 
 import data.FileHandler;
-import model.*;
+import model.Appointment;
+import model.Doctor;
+import model.EmergencyCase;
+import model.Patient;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.PriorityQueue;
 
-public class HospitalService {
+/**
+ * Modern Java service layer for hospital business operations.
+ */
+public final class HospitalService {
 
     private List<Patient> patients = new ArrayList<>();
     private List<Doctor> doctors = new ArrayList<>();
     private List<Appointment> appointments = new ArrayList<>();
-    private PriorityQueue<EmergencyCase> emergencyQueue = new PriorityQueue<>(
-            (a, b) -> Integer.compare(b.getSeverity(), a.getSeverity()) // Max-heap: highest severity first
+    private final PriorityQueue<EmergencyCase> emergencyQueue = new PriorityQueue<>(
+            Comparator.comparingInt(EmergencyCase::severity).reversed() // Max-Heap
     );
 
     public HospitalService() {
@@ -19,9 +28,9 @@ public class HospitalService {
     }
 
     public void loadAllData() {
-        patients = FileHandler.loadPatients();
-        doctors = FileHandler.loadDoctors();
-        appointments = FileHandler.loadAppointments();
+        patients = new ArrayList<>(FileHandler.loadPatients());
+        doctors = new ArrayList<>(FileHandler.loadDoctors());
+        appointments = new ArrayList<>(FileHandler.loadAppointments());
     }
 
     // ---------------- PATIENT ----------------
@@ -32,7 +41,7 @@ public class HospitalService {
     }
 
     public List<Patient> getPatients() {
-        return patients;
+        return List.copyOf(patients);
     }
 
     // ---------------- DOCTOR ----------------
@@ -43,7 +52,7 @@ public class HospitalService {
     }
 
     public List<Doctor> getDoctors() {
-        return doctors;
+        return List.copyOf(doctors);
     }
 
     // ---------------- APPOINTMENT ----------------
@@ -66,30 +75,31 @@ public class HospitalService {
     }
 
     public List<Appointment> getAllAppointments() {
-        return appointments;
+        return List.copyOf(appointments);
     }
 
     public List<Appointment> getOptimizedAppointments() {
-        algorithm.IntervalScheduling scheduler = new algorithm.IntervalScheduling();
-        ArrayList<Appointment> validList = new ArrayList<>();
-        for (Appointment a : appointments) {
-            if (a.getDate() != null && !a.getDate().equalsIgnoreCase("NA") &&
-                a.getTime() != null && !a.getTime().equalsIgnoreCase("NA")) {
+        var scheduler = new algorithm.IntervalScheduling();
+        var validList = new ArrayList<Appointment>();
+        for (var a : appointments) {
+            if (a.date() != null && !a.date().equalsIgnoreCase("NA") &&
+                a.time() != null && !a.time().equalsIgnoreCase("NA")) {
                 validList.add(a);
             }
         }
+
         return scheduler.schedule(validList);
     }
 
     // ---------------- BILLING ----------------
 
     public double generateBill(int patientId, String patientName, boolean emergency) {
-        BillingService billing = new BillingService();
+        var billing = new BillingService();
         return billing.calculateBill(2000, emergency, 0);
     }
 
     public String generateDetailedReceipt(int patientId, String patientName, int consultationFee, int testsCost, boolean emergency) {
-        BillingService billing = new BillingService();
+        var billing = new BillingService();
         return billing.generateDetailedReceipt(patientId, patientName, consultationFee, testsCost, emergency);
     }
 

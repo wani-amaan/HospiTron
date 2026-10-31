@@ -8,39 +8,44 @@ import java.util.Comparator;
 import java.util.List;
 import model.Appointment;
 
-public class IntervalScheduling {
+/**
+ * Modern Java Interval Scheduling (Greedy Algorithm) for conflict-free appointments.
+ */
+public final class IntervalScheduling {
 
     private static final int DEFAULT_SLOT_MINUTES = 15;
 
-    private static final DateTimeFormatter[] FORMATTERS = new DateTimeFormatter[] {
+    private static final List<DateTimeFormatter> FORMATTERS = List.of(
             DateTimeFormatter.ofPattern("dd-MM-uuuu HH:mm"),
             DateTimeFormatter.ofPattern("dd/MM/uuuu HH:mm")
-    };
+    );
+
+    public record AppointmentInterval(Appointment appointment, LocalDateTime start, LocalDateTime end) {}
 
     public ArrayList<Appointment> schedule(ArrayList<Appointment> list) {
-        ArrayList<Appointment> result = new ArrayList<>();
+        var result = new ArrayList<Appointment>();
         if (list == null || list.isEmpty()) {
             return result;
         }
 
-        List<AppointmentInterval> intervals = new ArrayList<>();
-        for (Appointment a : list) {
-            LocalDateTime start = parseDateTime(a);
-            LocalDateTime end = start.plusMinutes(DEFAULT_SLOT_MINUTES);
+        var intervals = new ArrayList<AppointmentInterval>();
+        for (var a : list) {
+            var start = parseDateTime(a);
+            var end = start.plusMinutes(DEFAULT_SLOT_MINUTES);
             intervals.add(new AppointmentInterval(a, start, end));
         }
 
         intervals.sort(Comparator
-                .comparing(AppointmentInterval::getEnd)
-                .thenComparing(AppointmentInterval::getStart)
-                .thenComparingInt(i -> i.getAppointment().getAppointmentId()));
+                .comparing(AppointmentInterval::end)
+                .thenComparing(AppointmentInterval::start)
+                .thenComparingInt(i -> i.appointment().appointmentId()));
 
         LocalDateTime currentEnd = null;
 
-        for (AppointmentInterval interval : intervals) {
-            if (currentEnd == null || !interval.getStart().isBefore(currentEnd)) {
-                result.add(interval.getAppointment());
-                currentEnd = interval.getEnd();
+        for (var interval : intervals) {
+            if (currentEnd == null || !interval.start().isBefore(currentEnd)) {
+                result.add(interval.appointment());
+                currentEnd = interval.end();
             }
         }
 
@@ -48,9 +53,9 @@ public class IntervalScheduling {
     }
 
     private LocalDateTime parseDateTime(Appointment appointment) {
-        String combined = appointment.getDate().trim() + " " + appointment.getTime().trim();
+        var combined = appointment.date().strip() + " " + appointment.time().strip();
 
-        for (DateTimeFormatter formatter : FORMATTERS) {
+        for (var formatter : FORMATTERS) {
             try {
                 return LocalDateTime.parse(combined, formatter);
             } catch (DateTimeParseException ignored) {
@@ -58,31 +63,7 @@ public class IntervalScheduling {
         }
 
         throw new IllegalArgumentException(
-                "Invalid appointment date/time format for Appointment ID " + appointment.getAppointmentId()
+                "Invalid appointment date/time format for Appointment ID " + appointment.appointmentId()
         );
-    }
-
-    private static class AppointmentInterval {
-        private final Appointment appointment;
-        private final LocalDateTime start;
-        private final LocalDateTime end;
-
-        private AppointmentInterval(Appointment appointment, LocalDateTime start, LocalDateTime end) {
-            this.appointment = appointment;
-            this.start = start;
-            this.end = end;
-        }
-
-        private Appointment getAppointment() {
-            return appointment;
-        }
-
-        private LocalDateTime getStart() {
-            return start;
-        }
-
-        private LocalDateTime getEnd() {
-            return end;
-        }
     }
 }
