@@ -13,36 +13,43 @@ public class DashboardFrame extends JFrame {
         this.controller = controller;
 
         setTitle("Dashboard - HOSPITRON");
-        setSize(500, 350);
+        setSize(500, 390);
         setLayout(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
 
         getContentPane().setBackground(new Color(245, 248, 252));
 
         JLabel lblTitle = new JLabel("HOSPITRON DASHBOARD");
-        lblTitle.setBounds(140, 20, 250, 30);
+        lblTitle.setBounds(135, 20, 250, 30);
         lblTitle.setFont(new Font("Arial", Font.BOLD, 18));
         add(lblTitle);
 
         JButton btnPatient = new JButton("Patient Module");
-        btnPatient.setBounds(150, 80, 180, 30);
+        btnPatient.setBounds(150, 75, 200, 30);
         add(btnPatient);
 
         JButton btnDoctor = new JButton("Doctor Module");
-        btnDoctor.setBounds(150, 120, 180, 30);
+        btnDoctor.setBounds(150, 115, 200, 30);
         add(btnDoctor);
 
-        JButton btnAppointment = new JButton("Appointment");
-        btnAppointment.setBounds(150, 160, 180, 30);
+        JButton btnAppointment = new JButton("Appointment Module");
+        btnAppointment.setBounds(150, 155, 200, 30);
         add(btnAppointment);
 
-        JButton btnEmergency = new JButton("Emergency");
-        btnEmergency.setBounds(150, 200, 180, 30);
+        JButton btnEmergency = new JButton("Emergency Triage");
+        btnEmergency.setBounds(150, 195, 200, 30);
         add(btnEmergency);
 
         JButton btnBilling = new JButton("Generate Bill");
-        btnBilling.setBounds(150, 240, 180, 30);
+        btnBilling.setBounds(150, 235, 200, 30);
         add(btnBilling);
+
+        JButton btnOpt = new JButton("⚡ Optimization Suite (DSA)");
+        btnOpt.setBounds(130, 280, 240, 34);
+        btnOpt.setBackground(new Color(39, 174, 96));
+        btnOpt.setForeground(Color.WHITE);
+        add(btnOpt);
 
         // ---------------- ACTIONS ----------------
 
@@ -55,6 +62,8 @@ public class DashboardFrame extends JFrame {
         btnEmergency.addActionListener(e -> new EmergencyFrame(controller));
 
         btnBilling.addActionListener(e -> generateBill());
+
+        btnOpt.addActionListener(e -> new OptimizationFrame(controller));
 
         setVisible(true);
     }

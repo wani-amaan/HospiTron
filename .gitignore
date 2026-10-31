@@ -11,7 +11,7 @@ bin/
 patients.txt
 doctors.txt
 appointments.txt
-data/
+/data/
 
 # IDE / Editor Settings
 .idea/

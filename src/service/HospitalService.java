@@ -1,8 +1,8 @@
 package service;
 
+import data.FileHandler;
 import model.*;
 
-import java.io.*;
 import java.util.*;
 
 public class HospitalService {
@@ -14,67 +14,36 @@ public class HospitalService {
             (a, b) -> Integer.compare(b.getSeverity(), a.getSeverity()) // Max-heap: highest severity first
     );
 
-    private final String DATA_DIR = "data";
-    private final String PATIENT_FILE = "data/patients.txt";
-    private final String DOCTOR_FILE = "data/doctors.txt";
-    private final String APPOINTMENT_FILE = "data/appointments.txt";
-
     public HospitalService() {
-        ensureDataDirectoryExists();
         loadAllData();
     }
 
-    private void ensureDataDirectoryExists() {
-        File dir = new File(DATA_DIR);
-        if (!dir.exists()) {
-            dir.mkdirs();
-        }
+    public void loadAllData() {
+        patients = FileHandler.loadPatients();
+        doctors = FileHandler.loadDoctors();
+        appointments = FileHandler.loadAppointments();
     }
 
     // ---------------- PATIENT ----------------
 
     public void addPatient(int id, String name, int age) {
         patients.add(new Patient(id, name, age));
-        savePatients();
+        FileHandler.savePatients(patients);
     }
 
     public List<Patient> getPatients() {
         return patients;
     }
 
-    private void savePatients() {
-        ensureDataDirectoryExists();
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(PATIENT_FILE))) {
-            for (Patient p : patients) {
-                bw.write(p.getId() + "," + p.getName() + "," + p.getAge());
-                bw.newLine();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     // ---------------- DOCTOR ----------------
 
     public void addDoctor(int id, String name, String specialization) {
         doctors.add(new Doctor(id, name, specialization, true));
-        saveDoctors();
+        FileHandler.saveDoctors(doctors);
     }
 
     public List<Doctor> getDoctors() {
         return doctors;
-    }
-
-    private void saveDoctors() {
-        ensureDataDirectoryExists();
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(DOCTOR_FILE))) {
-            for (Doctor d : doctors) {
-                bw.write(d.getId() + "," + d.getName() + "," + d.getSpecialization());
-                bw.newLine();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     // ---------------- APPOINTMENT ----------------
@@ -89,8 +58,7 @@ public class HospitalService {
                 date,
                 time
         ));
-
-        saveAppointments();
+        FileHandler.saveAppointments(appointments);
     }
 
     public void bookAppointment(int patientId, int doctorId, int appointmentId) {
@@ -113,109 +81,11 @@ public class HospitalService {
         return scheduler.schedule(validList);
     }
 
-    private void saveAppointments() {
-        ensureDataDirectoryExists();
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(APPOINTMENT_FILE))) {
-
-            for (Appointment a : appointments) {
-                bw.write(
-                        a.getAppointmentId() + "," +
-                        a.getPatientId() + "," +
-                        a.getDoctorId() + "," +
-                        a.getStatus() + "," +
-                        a.getDate() + "," +
-                        a.getTime()
-                );
-                bw.newLine();
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    // ---------------- LOAD DATA ----------------
-
-    public void loadAllData() {
-        loadPatients();
-        loadDoctors();
-        loadAppointments();
-    }
-
-    private void loadPatients() {
-        File file = new File(PATIENT_FILE);
-        if (!file.exists()) return;
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] p = line.split(",");
-                if (p.length >= 3) {
-                    patients.add(new Patient(
-                            Integer.parseInt(p[0].trim()),
-                            p[1].trim(),
-                            Integer.parseInt(p[2].trim())
-                    ));
-                }
-            }
-        } catch (Exception ignored) {}
-    }
-
-    private void loadDoctors() {
-        File file = new File(DOCTOR_FILE);
-        if (!file.exists()) return;
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] d = line.split(",");
-                if (d.length >= 3) {
-                    doctors.add(new Doctor(
-                            Integer.parseInt(d[0].trim()),
-                            d[1].trim(),
-                            d[2].trim(),
-                            true
-                    ));
-                }
-            }
-        } catch (Exception ignored) {}
-    }
-
-    private void loadAppointments() {
-        File file = new File(APPOINTMENT_FILE);
-        if (!file.exists()) return;
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] a = line.split(",");
-                if (a.length >= 6) {
-                    appointments.add(new Appointment(
-                            Integer.parseInt(a[0].trim()),
-                            Integer.parseInt(a[1].trim()),
-                            Integer.parseInt(a[2].trim()),
-                            a[3].trim(),
-                            "NORMAL",
-                            a[4].trim(),
-                            a[5].trim()
-                    ));
-                } else if (a.length >= 4) {
-                    appointments.add(new Appointment(
-                            Integer.parseInt(a[0].trim()),
-                            Integer.parseInt(a[1].trim()),
-                            Integer.parseInt(a[2].trim()),
-                            a[3].trim(),
-                            "NORMAL",
-                            "31-10-2026",
-                            "10:00"
-                    ));
-                }
-            }
-        } catch (Exception ignored) {}
-    }
-
     // ---------------- BILLING ----------------
 
     public double generateBill(int patientId, String patientName, boolean emergency) {
-        if (emergency) return 5000;
-        return 2000;
+        BillingService billing = new BillingService();
+        return billing.calculateBill(2000, emergency, 0);
     }
 
     // ---------------- EMERGENCY (PRIORITY QUEUE TRIAGE) ----------------
