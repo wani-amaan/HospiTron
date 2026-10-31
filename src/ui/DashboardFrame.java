@@ -61,30 +61,10 @@ public class DashboardFrame extends JFrame {
 
         btnEmergency.addActionListener(e -> new EmergencyFrame(controller));
 
-        btnBilling.addActionListener(e -> generateBill());
+        btnBilling.addActionListener(e -> new BillingFrame(controller));
 
         btnOpt.addActionListener(e -> new OptimizationFrame(controller));
 
         setVisible(true);
-    }
-
-    private void generateBill() {
-        try {
-            String inputId = JOptionPane.showInputDialog(this, "Enter Patient ID:");
-            String name = JOptionPane.showInputDialog(this, "Enter Patient Name:");
-            String emergencyInput = JOptionPane.showInputDialog(this, "Emergency? (true/false)");
-
-            int patientId = Integer.parseInt(inputId);
-            boolean emergency = Boolean.parseBoolean(emergencyInput);
-
-            double bill = controller.generateBill(patientId, name, emergency);
-
-            JOptionPane.showMessageDialog(this,
-                    "Total Bill: " + bill);
-
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this,
-                    "Error generating bill");
-        }
     }
 }

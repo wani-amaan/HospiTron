@@ -62,4 +62,8 @@ public class HospitalController {
     public double generateBill(int patientId, String name, boolean emergency) {
         return service.generateBill(patientId, name, emergency);
     }
+
+    public String generateDetailedReceipt(int patientId, String name, int consultationFee, int testsCost, boolean emergency) {
+        return service.generateDetailedReceipt(patientId, name, consultationFee, testsCost, emergency);
+    }
 }

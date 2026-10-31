@@ -88,6 +88,11 @@ public class HospitalService {
         return billing.calculateBill(2000, emergency, 0);
     }
 
+    public String generateDetailedReceipt(int patientId, String patientName, int consultationFee, int testsCost, boolean emergency) {
+        BillingService billing = new BillingService();
+        return billing.generateDetailedReceipt(patientId, patientName, consultationFee, testsCost, emergency);
+    }
+
     // ---------------- EMERGENCY (PRIORITY QUEUE TRIAGE) ----------------
 
     public void addEmergency(int patientId, String name, int severity) {
