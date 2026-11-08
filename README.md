@@ -201,8 +201,6 @@ To demonstrate the full algorithmic capabilities of HospiTron in under 2 minutes
 
 Developed as an advanced implementation of **Object-Oriented Programming & Data Structures in Healthcare**:
 
-* **Department**: Department of Information Technology & Engineering
-* **Program**: B.Tech in Computer Science & Engineering
 * **Project Supervisor**: **Dr. Shahid Sultan**, Assistant Professor
 * **Project Contributors**:
   * **Amaan Qayum Wani** — *Lead Developer*
