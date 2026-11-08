@@ -5,6 +5,7 @@
 [![UI Framework](https://img.shields.io/badge/UI-Java%20Swing%20(Nimbus)-teal)](#-user-interface--features)
 [![Algorithms](https://img.shields.io/badge/DSA-Dijkstra%20%7C%20Knapsack%20%7C%20Greedy%20%7C%20PriorityQueue-purple)](#-algorithmic-intelligence--dsa-deep-dive)
 [![Build Status](https://img.shields.io/badge/Build-Passing%20(0%20errors)-brightgreen)](#-getting-started--execution)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 **HospiTron** is an intelligent, desktop-based Hospital Management and Resource Optimization System engineered with modern **Java 27 (LTS)** and **Java Swing (Nimbus Modern Theme)**.
 
