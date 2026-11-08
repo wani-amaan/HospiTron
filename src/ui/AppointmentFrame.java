@@ -2,11 +2,11 @@ package ui;
 
 import controller.HospitalController;
 import model.Appointment;
+import util.UITheme;
 import util.ValidationUtil;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -14,6 +14,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.util.List;
 import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -26,7 +28,7 @@ import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
 /**
- * Modern, classy Appointment Management Interface with Greedy Interval Scheduling.
+ * Modern, classy Appointment Management Interface with Greedy Interval Scheduling and smooth transitions.
  */
 public final class AppointmentFrame extends JFrame {
 
@@ -44,123 +46,132 @@ public final class AppointmentFrame extends JFrame {
         this.controller = controller;
 
         setTitle("Outpatient Appointments & Timetable Optimizer - HOSPITRON");
-        setSize(860, 560);
+        setSize(880, 580);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        // Header Panel
+        // Header Panel - Vertical Stack
         var pnlHeader = new JPanel(new BorderLayout());
-        pnlHeader.setBackground(new Color(37, 99, 235)); // Blue 600
-        pnlHeader.setBorder(BorderFactory.createEmptyBorder(14, 20, 14, 20));
+        pnlHeader.setBackground(UITheme.SLATE_900);
+        pnlHeader.setBorder(BorderFactory.createEmptyBorder(15, 24, 15, 24));
 
-        var lblTitle = new JLabel("📅 APPOINTMENT MANAGEMENT & SCHEDULING");
-        lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 17));
+        var pnlTitleGroup = new JPanel();
+        pnlTitleGroup.setLayout(new BoxLayout(pnlTitleGroup, BoxLayout.Y_AXIS));
+        pnlTitleGroup.setOpaque(false);
+
+        var lblTag = new JLabel("OUTPATIENT CLINIC & SCHEDULING ENGINE");
+        lblTag.setFont(UITheme.FONT_SECTION_TAG);
+        lblTag.setForeground(new Color(129, 140, 248)); // Indigo 400
+
+        var lblTitle = new JLabel("📅 APPOINTMENT MANAGEMENT & INTERVAL OPTIMIZER");
+        lblTitle.setFont(UITheme.FONT_HEADER_TITLE);
         lblTitle.setForeground(Color.WHITE);
 
-        var lblSub = new JLabel("Greedy Interval Scheduling Engine (O(N log N))");
-        lblSub.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        lblSub.setForeground(new Color(219, 234, 254)); // Blue 100
+        var lblSub = new JLabel("Greedy Interval Scheduling Engine (Earliest Finish Time First • O(N log N))");
+        lblSub.setFont(UITheme.FONT_HEADER_SUB);
+        lblSub.setForeground(UITheme.SLATE_500);
 
-        pnlHeader.add(lblTitle, BorderLayout.WEST);
-        pnlHeader.add(lblSub, BorderLayout.EAST);
+        pnlTitleGroup.add(lblTag);
+        pnlTitleGroup.add(Box.createVerticalStrut(3));
+        pnlTitleGroup.add(lblTitle);
+        pnlTitleGroup.add(Box.createVerticalStrut(3));
+        pnlTitleGroup.add(lblSub);
+
+        pnlHeader.add(pnlTitleGroup, BorderLayout.WEST);
         add(pnlHeader, BorderLayout.NORTH);
 
         // Main Split Pane: Left Form, Right Table
         var pnlForm = new JPanel(new GridBagLayout());
-        pnlForm.setBackground(new Color(248, 250, 252));
+        pnlForm.setBackground(UITheme.SLATE_50);
         pnlForm.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(0, 0, 0, 1, new Color(226, 232, 240)),
+                BorderFactory.createMatteBorder(0, 0, 0, 1, UITheme.SLATE_200),
                 BorderFactory.createEmptyBorder(18, 18, 18, 18)
         ));
-        pnlForm.setPreferredSize(new Dimension(320, 420));
+        pnlForm.setPreferredSize(new Dimension(320, 440));
 
         var gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(4, 5, 4, 5);
 
         gbc.gridx = 0; gbc.gridy = 0;
-        var l1 = new JLabel("Appointment ID");
-        l1.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        l1.setForeground(new Color(51, 65, 85));
+        var l1 = new JLabel("APPOINTMENT ID");
+        l1.setFont(UITheme.FONT_FORM_LABEL);
+        l1.setForeground(UITheme.SLATE_700);
         pnlForm.add(l1, gbc);
 
         gbc.gridx = 0; gbc.gridy = 1;
         txtAID = new JTextField();
-        txtAID.setPreferredSize(new Dimension(260, 28));
+        UITheme.styleInputField(txtAID);
+        txtAID.setPreferredSize(new Dimension(260, 30));
         pnlForm.add(txtAID, gbc);
 
         gbc.gridx = 0; gbc.gridy = 2;
-        var l2 = new JLabel("Patient ID");
-        l2.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        l2.setForeground(new Color(51, 65, 85));
+        var l2 = new JLabel("PATIENT ID");
+        l2.setFont(UITheme.FONT_FORM_LABEL);
+        l2.setForeground(UITheme.SLATE_700);
         pnlForm.add(l2, gbc);
 
         gbc.gridx = 0; gbc.gridy = 3;
         txtPID = new JTextField();
-        txtPID.setPreferredSize(new Dimension(260, 28));
+        UITheme.styleInputField(txtPID);
+        txtPID.setPreferredSize(new Dimension(260, 30));
         pnlForm.add(txtPID, gbc);
 
         gbc.gridx = 0; gbc.gridy = 4;
-        var l3 = new JLabel("Doctor ID");
-        l3.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        l3.setForeground(new Color(51, 65, 85));
+        var l3 = new JLabel("DOCTOR ID");
+        l3.setFont(UITheme.FONT_FORM_LABEL);
+        l3.setForeground(UITheme.SLATE_700);
         pnlForm.add(l3, gbc);
 
         gbc.gridx = 0; gbc.gridy = 5;
         txtDID = new JTextField();
-        txtDID.setPreferredSize(new Dimension(260, 28));
+        UITheme.styleInputField(txtDID);
+        txtDID.setPreferredSize(new Dimension(260, 30));
         pnlForm.add(txtDID, gbc);
 
         gbc.gridx = 0; gbc.gridy = 6;
-        var l4 = new JLabel("Date (dd-MM-yyyy)");
-        l4.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        l4.setForeground(new Color(51, 65, 85));
+        var l4 = new JLabel("DATE (dd-MM-yyyy)");
+        l4.setFont(UITheme.FONT_FORM_LABEL);
+        l4.setForeground(UITheme.SLATE_700);
         pnlForm.add(l4, gbc);
 
         gbc.gridx = 0; gbc.gridy = 7;
         txtDate = new JTextField("31-10-2026");
-        txtDate.setPreferredSize(new Dimension(260, 28));
+        UITheme.styleInputField(txtDate);
+        txtDate.setPreferredSize(new Dimension(260, 30));
         pnlForm.add(txtDate, gbc);
 
         gbc.gridx = 0; gbc.gridy = 8;
-        var l5 = new JLabel("Time (HH:mm)");
-        l5.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        l5.setForeground(new Color(51, 65, 85));
+        var l5 = new JLabel("TIME (HH:mm)");
+        l5.setFont(UITheme.FONT_FORM_LABEL);
+        l5.setForeground(UITheme.SLATE_700);
         pnlForm.add(l5, gbc);
 
         gbc.gridx = 0; gbc.gridy = 9;
         txtTime = new JTextField("10:00");
-        txtTime.setPreferredSize(new Dimension(260, 28));
+        UITheme.styleInputField(txtTime);
+        txtTime.setPreferredSize(new Dimension(260, 30));
         pnlForm.add(txtTime, gbc);
 
         gbc.gridx = 0; gbc.gridy = 10;
-        gbc.insets = new Insets(12, 5, 4, 5);
-        var btnBook = new JButton("Book Appointment");
-        btnBook.setFont(new Font("Segoe UI", Font.BOLD, 13));
-        btnBook.setBackground(new Color(37, 99, 235));
-        btnBook.setForeground(Color.WHITE);
-        btnBook.setPreferredSize(new Dimension(260, 32));
-        btnBook.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btnBook.setFocusPainted(false);
+        gbc.insets = new Insets(14, 5, 4, 5);
+        var btnBook = new JButton("Book Clinical Appointment");
+        UITheme.attachButtonTransitions(btnBook, UITheme.SCHED_BLUE, UITheme.SCHED_HOVER, UITheme.SCHED_CLICK);
+        btnBook.setPreferredSize(new Dimension(260, 34));
         pnlForm.add(btnBook, gbc);
 
         gbc.gridx = 0; gbc.gridy = 11;
         gbc.insets = new Insets(4, 5, 4, 5);
-        var btnOptimize = new JButton("⚡ Run Interval Optimizer");
-        btnOptimize.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        btnOptimize.setBackground(new Color(16, 185, 129)); // Emerald 500
-        btnOptimize.setForeground(Color.WHITE);
-        btnOptimize.setPreferredSize(new Dimension(260, 32));
-        btnOptimize.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btnOptimize.setFocusPainted(false);
+        var btnOptimize = new JButton("⚡ Run Interval Optimizer (Greedy)");
+        UITheme.attachButtonTransitions(btnOptimize, UITheme.SUCCESS_EMERALD, UITheme.EMERALD_HOVER, UITheme.EMERALD_CLICK);
+        btnOptimize.setPreferredSize(new Dimension(260, 34));
         pnlForm.add(btnOptimize, gbc);
 
         gbc.gridx = 0; gbc.gridy = 12;
         var btnAll = new JButton("Show All Bookings");
-        btnAll.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        btnAll.setPreferredSize(new Dimension(260, 28));
-        btnAll.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        UITheme.attachButtonTransitions(btnAll, UITheme.SLATE_800, UITheme.SLATE_700, UITheme.SLATE_900);
+        btnAll.setPreferredSize(new Dimension(260, 30));
         pnlForm.add(btnAll, gbc);
 
         // Right Table Panel
@@ -168,26 +179,23 @@ public final class AppointmentFrame extends JFrame {
         pnlRight.setBackground(Color.WHITE);
 
         var pnlTableBar = new JPanel(new BorderLayout());
-        pnlTableBar.setBackground(new Color(241, 245, 249));
-        pnlTableBar.setBorder(BorderFactory.createEmptyBorder(8, 14, 8, 14));
+        pnlTableBar.setBackground(UITheme.SLATE_100);
+        pnlTableBar.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
 
         lblFilterStatus = new JLabel("Showing all registered appointments");
-        lblFilterStatus.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        lblFilterStatus.setForeground(new Color(71, 85, 105));
+        lblFilterStatus.setFont(UITheme.FONT_BADGE);
+        lblFilterStatus.setForeground(UITheme.SLATE_700);
         pnlTableBar.add(lblFilterStatus, BorderLayout.WEST);
         pnlRight.add(pnlTableBar, BorderLayout.NORTH);
 
-        String[] cols = {"Appt ID", "Patient ID", "Doctor ID", "Date", "Time", "Status"};
+        String[] cols = {"Appt ID", "Patient ID", "Doctor ID", "Date", "Time", "Schedule Status"};
         tableModel = new DefaultTableModel(cols, 0) {
             @Override
             public boolean isCellEditable(int row, int column) { return false; }
         };
 
         table = new JTable(tableModel);
-        table.setRowHeight(28);
-        table.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        table.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 12));
-        table.getTableHeader().setBackground(new Color(248, 250, 252));
+        UITheme.styleTable(table);
 
         var scrollPane = new JScrollPane(table);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
@@ -264,21 +272,21 @@ public final class AppointmentFrame extends JFrame {
         tableModel.setRowCount(0);
         for (Appointment a : list) {
             tableModel.addRow(new Object[]{
-                    "#" + a.appointmentId(),
-                    "Patient " + a.patientId(),
-                    "Doctor " + a.doctorId(),
+                    "APT-" + a.appointmentId(),
+                    "PID-" + a.patientId(),
+                    "DOC-" + a.doctorId(),
                     a.date(),
                     a.time(),
-                    isOptimized ? "✔ COMPATIBLE (Optimized)" : a.status()
+                    isOptimized ? "✔ OPTIMAL (Conflict-Free)" : a.status()
             });
         }
 
         if (isOptimized) {
-            lblFilterStatus.setText("⚡ Filtered View: " + list.size() + " Conflict-Free Appointments (Interval Scheduling)");
-            lblFilterStatus.setForeground(new Color(16, 185, 129));
+            lblFilterStatus.setText("⚡ Filtered View: " + list.size() + " Conflict-Free Slots (Earliest Finish Time First)");
+            lblFilterStatus.setForeground(UITheme.SUCCESS_EMERALD);
         } else {
             lblFilterStatus.setText("Showing all " + list.size() + " registered appointments");
-            lblFilterStatus.setForeground(new Color(71, 85, 105));
+            lblFilterStatus.setForeground(UITheme.SLATE_700);
         }
     }
 }

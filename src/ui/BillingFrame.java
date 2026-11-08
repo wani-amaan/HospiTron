@@ -2,11 +2,11 @@ package ui;
 
 import controller.HospitalController;
 import model.Patient;
+import util.UITheme;
 import util.ValidationUtil;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -17,6 +17,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
@@ -29,7 +31,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 /**
- * Modern, classy Invoicing & Billing Interface with 50% Emergency Surcharge Calculation.
+ * Modern, classy Invoicing & Billing Interface with 50% Emergency Surcharge Calculation and smooth transitions.
  */
 public final class BillingFrame extends JFrame {
 
@@ -45,122 +47,132 @@ public final class BillingFrame extends JFrame {
         this.controller = controller;
 
         setTitle("Billing & Invoicing Suite - HOSPITRON");
-        setSize(860, 580);
+        setSize(880, 600);
         setLayout(new BorderLayout());
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        // Header Panel
+        // Header Panel - Vertical Stack
         var pnlHeader = new JPanel(new BorderLayout());
-        pnlHeader.setBackground(new Color(15, 23, 42)); // Slate 900
-        pnlHeader.setBorder(BorderFactory.createEmptyBorder(14, 20, 14, 20));
+        pnlHeader.setBackground(UITheme.SLATE_900);
+        pnlHeader.setBorder(BorderFactory.createEmptyBorder(15, 24, 15, 24));
+
+        var pnlTitleGroup = new JPanel();
+        pnlTitleGroup.setLayout(new BoxLayout(pnlTitleGroup, BoxLayout.Y_AXIS));
+        pnlTitleGroup.setOpaque(false);
+
+        var lblTag = new JLabel("HOSPITAL TARIFFS & FINANCIAL AUDIT");
+        lblTag.setFont(UITheme.FONT_SECTION_TAG);
+        lblTag.setForeground(new Color(251, 191, 36)); // Amber 400
 
         var lblTitle = new JLabel("💳 INVOICE GENERATION & PATIENT BILLING");
-        lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 17));
+        lblTitle.setFont(UITheme.FONT_HEADER_TITLE);
         lblTitle.setForeground(Color.WHITE);
 
-        var lblSub = new JLabel("Itemized Tariff Engine (+50% Emergency Critical Care Surcharge)");
-        lblSub.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        lblSub.setForeground(new Color(148, 163, 184)); // Slate 400
+        var lblSub = new JLabel("Itemized Tariff Engine (+50% Emergency Critical Care Surcharge Calculation)");
+        lblSub.setFont(UITheme.FONT_HEADER_SUB);
+        lblSub.setForeground(UITheme.SLATE_500);
 
-        pnlHeader.add(lblTitle, BorderLayout.WEST);
-        pnlHeader.add(lblSub, BorderLayout.EAST);
+        pnlTitleGroup.add(lblTag);
+        pnlTitleGroup.add(Box.createVerticalStrut(3));
+        pnlTitleGroup.add(lblTitle);
+        pnlTitleGroup.add(Box.createVerticalStrut(3));
+        pnlTitleGroup.add(lblSub);
+
+        pnlHeader.add(pnlTitleGroup, BorderLayout.WEST);
         add(pnlHeader, BorderLayout.NORTH);
 
         // Left Form Panel
         var pnlForm = new JPanel(new GridBagLayout());
-        pnlForm.setBackground(new Color(248, 250, 252));
+        pnlForm.setBackground(UITheme.SLATE_50);
         pnlForm.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(0, 0, 0, 1, new Color(226, 232, 240)),
+                BorderFactory.createMatteBorder(0, 0, 0, 1, UITheme.SLATE_200),
                 BorderFactory.createEmptyBorder(18, 18, 18, 18)
         ));
-        pnlForm.setPreferredSize(new Dimension(320, 440));
+        pnlForm.setPreferredSize(new Dimension(320, 460));
 
         var gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(3, 5, 3, 5);
 
         gbc.gridx = 0; gbc.gridy = 0;
-        var l1 = new JLabel("Patient ID");
-        l1.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        l1.setForeground(new Color(51, 65, 85));
+        var l1 = new JLabel("PATIENT ID");
+        l1.setFont(UITheme.FONT_FORM_LABEL);
+        l1.setForeground(UITheme.SLATE_700);
         pnlForm.add(l1, gbc);
 
         gbc.gridx = 0; gbc.gridy = 1;
         txtPID = new JTextField();
-        txtPID.setPreferredSize(new Dimension(260, 28));
+        UITheme.styleInputField(txtPID);
+        txtPID.setPreferredSize(new Dimension(260, 30));
         pnlForm.add(txtPID, gbc);
 
         gbc.gridx = 0; gbc.gridy = 2;
         gbc.insets = new Insets(2, 5, 6, 5);
         var btnAutoFill = new JButton("🔍 Auto-Lookup Patient Name");
-        btnAutoFill.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-        btnAutoFill.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        UITheme.attachButtonTransitions(btnAutoFill, UITheme.SLATE_800, UITheme.SLATE_700, UITheme.SLATE_900);
+        btnAutoFill.setFont(UITheme.FONT_BTN_SM);
+        btnAutoFill.setPreferredSize(new Dimension(260, 28));
         btnAutoFill.addActionListener(e -> lookupPatientName());
         pnlForm.add(btnAutoFill, gbc);
 
         gbc.gridx = 0; gbc.gridy = 3;
         gbc.insets = new Insets(3, 5, 3, 5);
-        var l2 = new JLabel("Patient Full Name");
-        l2.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        l2.setForeground(new Color(51, 65, 85));
+        var l2 = new JLabel("PATIENT FULL NAME");
+        l2.setFont(UITheme.FONT_FORM_LABEL);
+        l2.setForeground(UITheme.SLATE_700);
         pnlForm.add(l2, gbc);
 
         gbc.gridx = 0; gbc.gridy = 4;
         txtName = new JTextField();
-        txtName.setPreferredSize(new Dimension(260, 28));
+        UITheme.styleInputField(txtName);
+        txtName.setPreferredSize(new Dimension(260, 30));
         pnlForm.add(txtName, gbc);
 
         gbc.gridx = 0; gbc.gridy = 5;
-        var l3 = new JLabel("Doctor Consultation Fee (₹)");
-        l3.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        l3.setForeground(new Color(51, 65, 85));
+        var l3 = new JLabel("DOCTOR CONSULTATION FEE (₹)");
+        l3.setFont(UITheme.FONT_FORM_LABEL);
+        l3.setForeground(UITheme.SLATE_700);
         pnlForm.add(l3, gbc);
 
         gbc.gridx = 0; gbc.gridy = 6;
         txtConsultation = new JTextField("2000");
-        txtConsultation.setPreferredSize(new Dimension(260, 28));
+        UITheme.styleInputField(txtConsultation);
+        txtConsultation.setPreferredSize(new Dimension(260, 30));
         pnlForm.add(txtConsultation, gbc);
 
         gbc.gridx = 0; gbc.gridy = 7;
-        var l4 = new JLabel("Diagnostics / Lab Tests Cost (₹)");
-        l4.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        l4.setForeground(new Color(51, 65, 85));
+        var l4 = new JLabel("DIAGNOSTICS & LAB TESTS COST (₹)");
+        l4.setFont(UITheme.FONT_FORM_LABEL);
+        l4.setForeground(UITheme.SLATE_700);
         pnlForm.add(l4, gbc);
 
         gbc.gridx = 0; gbc.gridy = 8;
         txtTests = new JTextField("500");
-        txtTests.setPreferredSize(new Dimension(260, 28));
+        UITheme.styleInputField(txtTests);
+        txtTests.setPreferredSize(new Dimension(260, 30));
         pnlForm.add(txtTests, gbc);
 
         gbc.gridx = 0; gbc.gridy = 9;
         gbc.insets = new Insets(8, 5, 8, 5);
         chkEmergency = new JCheckBox("🚨 Emergency Case (+50% Surcharge)");
         chkEmergency.setOpaque(false);
-        chkEmergency.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        chkEmergency.setForeground(new Color(220, 38, 38));
+        chkEmergency.setFont(UITheme.FONT_FORM_LABEL);
+        chkEmergency.setForeground(UITheme.TRIAGE_RED);
         pnlForm.add(chkEmergency, gbc);
 
         gbc.gridx = 0; gbc.gridy = 10;
         gbc.insets = new Insets(8, 5, 4, 5);
         var btnGenerate = new JButton("⚡ Generate Itemized Invoice");
-        btnGenerate.setFont(new Font("Segoe UI", Font.BOLD, 13));
-        btnGenerate.setBackground(new Color(2, 132, 199)); // Sky 600
-        btnGenerate.setForeground(Color.WHITE);
-        btnGenerate.setPreferredSize(new Dimension(260, 32));
-        btnGenerate.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btnGenerate.setFocusPainted(false);
+        UITheme.attachButtonTransitions(btnGenerate, UITheme.TARIFF_AMBER, UITheme.AMBER_HOVER, UITheme.AMBER_CLICK);
+        btnGenerate.setPreferredSize(new Dimension(260, 34));
         btnGenerate.addActionListener(e -> generateInvoice());
         pnlForm.add(btnGenerate, gbc);
 
         gbc.gridx = 0; gbc.gridy = 11;
         var btnExport = new JButton("💾 Export Invoice to File");
-        btnExport.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        btnExport.setBackground(new Color(16, 185, 129)); // Emerald 500
-        btnExport.setForeground(Color.WHITE);
-        btnExport.setPreferredSize(new Dimension(260, 32));
-        btnExport.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btnExport.setFocusPainted(false);
+        UITheme.attachButtonTransitions(btnExport, UITheme.SUCCESS_EMERALD, UITheme.EMERALD_HOVER, UITheme.EMERALD_CLICK);
+        btnExport.setPreferredSize(new Dimension(260, 34));
         btnExport.addActionListener(e -> exportInvoice());
         pnlForm.add(btnExport, gbc);
 
@@ -169,37 +181,40 @@ public final class BillingFrame extends JFrame {
         pnlReceipt.setBackground(Color.WHITE);
 
         var pnlBar = new JPanel(new BorderLayout());
-        pnlBar.setBackground(new Color(241, 245, 249));
-        pnlBar.setBorder(BorderFactory.createEmptyBorder(8, 14, 8, 14));
-        var lblBar = new JLabel("Official Hospital Tax Invoice Preview");
-        lblBar.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        lblBar.setForeground(new Color(71, 85, 105));
+        pnlBar.setBackground(UITheme.SLATE_100);
+        pnlBar.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
+        var lblBar = new JLabel("Official Hospital Tax Invoice & Audit Receipt");
+        lblBar.setFont(UITheme.FONT_BADGE);
+        lblBar.setForeground(UITheme.SLATE_700);
         pnlBar.add(lblBar, BorderLayout.WEST);
         pnlReceipt.add(pnlBar, BorderLayout.NORTH);
 
         txtReceipt = new JTextArea();
         txtReceipt.setEditable(false);
-        txtReceipt.setFont(new Font("Consolas", Font.PLAIN, 12));
-        txtReceipt.setBackground(new Color(248, 250, 252));
-        txtReceipt.setBorder(BorderFactory.createEmptyBorder(12, 14, 12, 14));
+        txtReceipt.setFont(UITheme.FONT_MONO_DATA);
+        txtReceipt.setBackground(Color.WHITE);
+        txtReceipt.setForeground(new Color(15, 23, 42));
+        txtReceipt.setBorder(BorderFactory.createEmptyBorder(14, 16, 14, 16));
         txtReceipt.setText("""
                 ========================================================================
-                                     HOSPITRON INVOICE PREVIEW
+                                     HOSPITRON INVOICE PREVIEW CONSOLE
                 ========================================================================
                 Fill in the patient and tariff details on the left, then click
                 'Generate Itemized Invoice' to calculate the total payable balance.
 
                 Features:
-                • Automated patient directory lookup
+                • Automated patient directory lookup (O(1) in-memory filter)
                 • Itemized tariff breakdown
                 • 50% critical emergency care surcharge
                 • One-click export to data/invoice_patient_<id>.txt
                 """);
 
-        pnlReceipt.add(new JScrollPane(txtReceipt), BorderLayout.CENTER);
+        var scrollReceipt = new JScrollPane(txtReceipt);
+        scrollReceipt.setBorder(BorderFactory.createEmptyBorder());
+        pnlReceipt.add(scrollReceipt, BorderLayout.CENTER);
 
         var splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, pnlForm, pnlReceipt);
-        splitPane.setDividerLocation(330);
+        splitPane.setDividerLocation(320);
         splitPane.setDividerSize(1);
         add(splitPane, BorderLayout.CENTER);
 

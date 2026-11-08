@@ -1,15 +1,18 @@
 package ui;
 
 import controller.HospitalController;
+import util.UITheme;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -21,7 +24,7 @@ import javax.swing.SwingConstants;
 import security.AuthService;
 
 /**
- * Modern, classy healthcare security login interface.
+ * Modern, classy healthcare security login interface with smooth interaction transitions.
  */
 public final class LoginFrame extends JFrame {
 
@@ -31,105 +34,117 @@ public final class LoginFrame extends JFrame {
 
     public LoginFrame() {
         setTitle("HospiTron Security Gateway");
-        setSize(420, 380);
+        setSize(440, 420);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
         setLayout(new BorderLayout());
 
-        // Header Banner
-        var pnlHeader = new JPanel(new BorderLayout());
-        pnlHeader.setBackground(new Color(15, 23, 42)); // Modern Slate 900
-        pnlHeader.setBorder(BorderFactory.createEmptyBorder(20, 20, 18, 20));
+        // Header Banner - Vertical Stack
+        var pnlHeader = new JPanel();
+        pnlHeader.setLayout(new BoxLayout(pnlHeader, BoxLayout.Y_AXIS));
+        pnlHeader.setBackground(UITheme.SLATE_900);
+        pnlHeader.setBorder(BorderFactory.createEmptyBorder(22, 24, 20, 24));
 
-        var lblBrand = new JLabel("🏥 HOSPITRON", SwingConstants.CENTER);
-        lblBrand.setFont(new Font("Segoe UI", Font.BOLD, 22));
-        lblBrand.setForeground(new Color(56, 189, 248)); // Sky Blue
+        var lblTag = new JLabel("ENTERPRISE ACCESS GATEWAY");
+        lblTag.setFont(UITheme.FONT_SECTION_TAG);
+        lblTag.setForeground(new Color(56, 189, 248)); // Sky 400
+        lblTag.setAlignmentX(CENTER_ALIGNMENT);
 
-        var lblSub = new JLabel("Clinical Management & Resource Optimization", SwingConstants.CENTER);
-        lblSub.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        lblSub.setForeground(new Color(148, 163, 184)); // Slate 400
+        var lblBrand = new JLabel("🏥 HOSPITRON CLINICAL SUITE");
+        lblBrand.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        lblBrand.setForeground(Color.WHITE);
+        lblBrand.setAlignmentX(CENTER_ALIGNMENT);
 
-        pnlHeader.add(lblBrand, BorderLayout.CENTER);
-        pnlHeader.add(lblSub, BorderLayout.SOUTH);
+        var lblSub = new JLabel("Role-Based Cryptographic Access Verification");
+        lblSub.setFont(UITheme.FONT_HEADER_SUB);
+        lblSub.setForeground(UITheme.SLATE_500);
+        lblSub.setAlignmentX(CENTER_ALIGNMENT);
+
+        pnlHeader.add(lblTag);
+        pnlHeader.add(Box.createVerticalStrut(4));
+        pnlHeader.add(lblBrand);
+        pnlHeader.add(Box.createVerticalStrut(4));
+        pnlHeader.add(lblSub);
         add(pnlHeader, BorderLayout.NORTH);
 
         // Card Body
         var pnlBody = new JPanel(new GridBagLayout());
-        pnlBody.setBackground(new Color(248, 250, 252));
-        pnlBody.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
+        pnlBody.setBackground(UITheme.SLATE_50);
+        pnlBody.setBorder(BorderFactory.createEmptyBorder(20, 32, 20, 32));
 
         var gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(6, 6, 6, 6);
+        gbc.insets = new Insets(5, 6, 5, 6);
 
         // Username
         gbc.gridx = 0; gbc.gridy = 0; gbc.gridwidth = 1;
-        var lblUser = new JLabel("Username");
-        lblUser.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        lblUser.setForeground(new Color(51, 65, 85));
+        var lblUser = new JLabel("USERNAME");
+        lblUser.setFont(UITheme.FONT_FORM_LABEL);
+        lblUser.setForeground(UITheme.SLATE_700);
         pnlBody.add(lblUser, gbc);
 
         gbc.gridx = 0; gbc.gridy = 1; gbc.gridwidth = 2;
         usernameField = new JTextField("AMAAN");
-        usernameField.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        usernameField.setPreferredSize(new Dimension(300, 32));
+        UITheme.styleInputField(usernameField);
+        usernameField.setPreferredSize(new Dimension(300, 34));
         pnlBody.add(usernameField, gbc);
 
         // Password
         gbc.gridx = 0; gbc.gridy = 2; gbc.gridwidth = 1;
-        var lblPass = new JLabel("Password");
-        lblPass.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        lblPass.setForeground(new Color(51, 65, 85));
+        var lblPass = new JLabel("PASSWORD");
+        lblPass.setFont(UITheme.FONT_FORM_LABEL);
+        lblPass.setForeground(UITheme.SLATE_700);
         pnlBody.add(lblPass, gbc);
 
         gbc.gridx = 0; gbc.gridy = 3; gbc.gridwidth = 2;
         passwordField = new JPasswordField("12345");
-        passwordField.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        passwordField.setPreferredSize(new Dimension(300, 32));
+        passwordField.setFont(UITheme.FONT_INPUT);
+        passwordField.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(UITheme.SLATE_200, 1),
+                BorderFactory.createEmptyBorder(4, 8, 4, 8)
+        ));
+        passwordField.setPreferredSize(new Dimension(300, 34));
         pnlBody.add(passwordField, gbc);
 
         // Login Button
         gbc.gridx = 0; gbc.gridy = 4; gbc.gridwidth = 2;
-        gbc.insets = new Insets(14, 6, 8, 6);
+        gbc.insets = new Insets(16, 6, 8, 6);
         var loginBtn = new JButton("SECURE SIGN IN  ➔");
-        loginBtn.setFont(new Font("Segoe UI", Font.BOLD, 13));
-        loginBtn.setBackground(new Color(14, 116, 144)); // Deep Cyan/Teal
-        loginBtn.setForeground(Color.WHITE);
-        loginBtn.setPreferredSize(new Dimension(300, 36));
-        loginBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        loginBtn.setFocusPainted(false);
+        UITheme.attachButtonTransitions(loginBtn, UITheme.SURGICAL_TEAL, UITheme.TEAL_HOVER, UITheme.TEAL_CLICK);
+        loginBtn.setPreferredSize(new Dimension(300, 38));
         pnlBody.add(loginBtn, gbc);
 
-        // Footer hint
+        // Footer helper text
         gbc.gridx = 0; gbc.gridy = 5; gbc.gridwidth = 2;
-        gbc.insets = new Insets(4, 6, 4, 6);
-        var lblHint = new JLabel("Default Admin Credentials: AMAAN / 12345", SwingConstants.CENTER);
-        lblHint.setFont(new Font("Segoe UI", Font.ITALIC, 11));
-        lblHint.setForeground(new Color(100, 116, 139));
-        pnlBody.add(lblHint, gbc);
+        var lblHelp = new JLabel("Default Admin Credentials: AMAAN / 12345", SwingConstants.CENTER);
+        lblHelp.setFont(new Font("Consolas", Font.PLAIN, 11));
+        lblHelp.setForeground(UITheme.SLATE_500);
+        pnlBody.add(lblHelp, gbc);
 
         add(pnlBody, BorderLayout.CENTER);
 
-        // Bind events
-        loginBtn.addActionListener(e -> attemptLogin());
-        passwordField.addActionListener(e -> attemptLogin());
-        usernameField.addActionListener(e -> attemptLogin());
+        loginBtn.addActionListener(e -> performLogin());
+        passwordField.addActionListener(e -> performLogin());
 
         setVisible(true);
     }
 
-    private void attemptLogin() {
-        var u = usernameField.getText();
-        var p = new String(passwordField.getPassword());
+    private void performLogin() {
+        String username = usernameField.getText().strip();
+        String password = new String(passwordField.getPassword());
 
-        if (auth.login(u, p)) {
-            new DashboardFrame(new HospitalController());
+        if (auth.login(username, password)) {
             dispose();
+            new DashboardFrame(new HospitalController());
         } else {
             JOptionPane.showMessageDialog(this,
-                    "Invalid Administrator Credentials. Please check username and password.",
-                    "Authentication Failed",
+                    """
+                    AUTHENTICATION FAILED
+                    Invalid credentials entered.
+                    Default Admin Credentials: AMAAN / 12345
+                    """,
+                    "Security Verification Failed",
                     JOptionPane.ERROR_MESSAGE);
         }
     }
