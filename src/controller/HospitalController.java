@@ -71,6 +71,10 @@ public final class HospitalController {
         return service.handleEmergency();
     }
 
+    public List<EmergencyCase> getEmergencyQueueSnapshot() {
+        return service.getEmergencyQueueSnapshot();
+    }
+
     // ---------------- BILLING ----------------
 
     public double generateBill(int patientId, String name, boolean emergency) {

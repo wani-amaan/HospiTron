@@ -4,16 +4,29 @@ import controller.HospitalController;
 import model.Appointment;
 import util.ValidationUtil;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.util.List;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.table.DefaultTableModel;
 
 /**
- * Modern Java Appointment Management & Interval Scheduling Frame.
+ * Modern, classy Appointment Management Interface with Greedy Interval Scheduling.
  */
 public final class AppointmentFrame extends JFrame {
 
@@ -22,82 +35,176 @@ public final class AppointmentFrame extends JFrame {
     private final JTextField txtDID;
     private final JTextField txtDate;
     private final JTextField txtTime;
+    private final JLabel lblFilterStatus;
+    private final DefaultTableModel tableModel;
+    private final JTable table;
     private final HospitalController controller;
 
     public AppointmentFrame(HospitalController controller) {
         this.controller = controller;
 
-        setTitle("Appointment Module - HOSPITRON");
-        setSize(520, 440);
-        setLayout(null);
+        setTitle("Outpatient Appointments & Timetable Optimizer - HOSPITRON");
+        setSize(860, 560);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
+        setLayout(new BorderLayout());
 
-        getContentPane().setBackground(new Color(235, 245, 255));
+        // Header Panel
+        var pnlHeader = new JPanel(new BorderLayout());
+        pnlHeader.setBackground(new Color(37, 99, 235)); // Blue 600
+        pnlHeader.setBorder(BorderFactory.createEmptyBorder(14, 20, 14, 20));
 
-        var title = new JLabel("APPOINTMENT MANAGEMENT");
-        title.setBounds(130, 15, 300, 25);
-        title.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        add(title);
+        var lblTitle = new JLabel("📅 APPOINTMENT MANAGEMENT & SCHEDULING");
+        lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 17));
+        lblTitle.setForeground(Color.WHITE);
 
-        var l1 = new JLabel("Appointment ID:");
-        l1.setBounds(50, 60, 120, 25);
-        add(l1);
+        var lblSub = new JLabel("Greedy Interval Scheduling Engine (O(N log N))");
+        lblSub.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        lblSub.setForeground(new Color(219, 234, 254)); // Blue 100
 
+        pnlHeader.add(lblTitle, BorderLayout.WEST);
+        pnlHeader.add(lblSub, BorderLayout.EAST);
+        add(pnlHeader, BorderLayout.NORTH);
+
+        // Main Split Pane: Left Form, Right Table
+        var pnlForm = new JPanel(new GridBagLayout());
+        pnlForm.setBackground(new Color(248, 250, 252));
+        pnlForm.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(0, 0, 0, 1, new Color(226, 232, 240)),
+                BorderFactory.createEmptyBorder(18, 18, 18, 18)
+        ));
+        pnlForm.setPreferredSize(new Dimension(320, 420));
+
+        var gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(4, 5, 4, 5);
+
+        gbc.gridx = 0; gbc.gridy = 0;
+        var l1 = new JLabel("Appointment ID");
+        l1.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        l1.setForeground(new Color(51, 65, 85));
+        pnlForm.add(l1, gbc);
+
+        gbc.gridx = 0; gbc.gridy = 1;
         txtAID = new JTextField();
-        txtAID.setBounds(180, 60, 250, 26);
-        add(txtAID);
+        txtAID.setPreferredSize(new Dimension(260, 28));
+        pnlForm.add(txtAID, gbc);
 
-        var l2 = new JLabel("Patient ID:");
-        l2.setBounds(50, 100, 120, 25);
-        add(l2);
+        gbc.gridx = 0; gbc.gridy = 2;
+        var l2 = new JLabel("Patient ID");
+        l2.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        l2.setForeground(new Color(51, 65, 85));
+        pnlForm.add(l2, gbc);
 
+        gbc.gridx = 0; gbc.gridy = 3;
         txtPID = new JTextField();
-        txtPID.setBounds(180, 100, 250, 26);
-        add(txtPID);
+        txtPID.setPreferredSize(new Dimension(260, 28));
+        pnlForm.add(txtPID, gbc);
 
-        var l3 = new JLabel("Doctor ID:");
-        l3.setBounds(50, 140, 120, 25);
-        add(l3);
+        gbc.gridx = 0; gbc.gridy = 4;
+        var l3 = new JLabel("Doctor ID");
+        l3.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        l3.setForeground(new Color(51, 65, 85));
+        pnlForm.add(l3, gbc);
 
+        gbc.gridx = 0; gbc.gridy = 5;
         txtDID = new JTextField();
-        txtDID.setBounds(180, 140, 250, 26);
-        add(txtDID);
+        txtDID.setPreferredSize(new Dimension(260, 28));
+        pnlForm.add(txtDID, gbc);
 
-        var l4 = new JLabel("Date (dd-MM-yyyy):");
-        l4.setBounds(50, 180, 130, 25);
-        add(l4);
+        gbc.gridx = 0; gbc.gridy = 6;
+        var l4 = new JLabel("Date (dd-MM-yyyy)");
+        l4.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        l4.setForeground(new Color(51, 65, 85));
+        pnlForm.add(l4, gbc);
 
+        gbc.gridx = 0; gbc.gridy = 7;
         txtDate = new JTextField("31-10-2026");
-        txtDate.setBounds(180, 180, 250, 26);
-        add(txtDate);
+        txtDate.setPreferredSize(new Dimension(260, 28));
+        pnlForm.add(txtDate, gbc);
 
-        var l5 = new JLabel("Time (HH:mm):");
-        l5.setBounds(50, 220, 120, 25);
-        add(l5);
+        gbc.gridx = 0; gbc.gridy = 8;
+        var l5 = new JLabel("Time (HH:mm)");
+        l5.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        l5.setForeground(new Color(51, 65, 85));
+        pnlForm.add(l5, gbc);
 
+        gbc.gridx = 0; gbc.gridy = 9;
         txtTime = new JTextField("10:00");
-        txtTime.setBounds(180, 220, 250, 26);
-        add(txtTime);
+        txtTime.setPreferredSize(new Dimension(260, 28));
+        pnlForm.add(txtTime, gbc);
 
+        gbc.gridx = 0; gbc.gridy = 10;
+        gbc.insets = new Insets(12, 5, 4, 5);
         var btnBook = new JButton("Book Appointment");
-        btnBook.setBounds(50, 275, 180, 32);
-        add(btnBook);
+        btnBook.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        btnBook.setBackground(new Color(37, 99, 235));
+        btnBook.setForeground(Color.WHITE);
+        btnBook.setPreferredSize(new Dimension(260, 32));
+        btnBook.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnBook.setFocusPainted(false);
+        pnlForm.add(btnBook, gbc);
 
-        var btnView = new JButton("View Appointments");
-        btnView.setBounds(250, 275, 180, 32);
-        add(btnView);
-
-        var btnOptimize = new JButton("⚡ Optimize Schedule (Interval Scheduling)");
-        btnOptimize.setBounds(70, 325, 340, 34);
-        btnOptimize.setBackground(new Color(46, 125, 50));
+        gbc.gridx = 0; gbc.gridy = 11;
+        gbc.insets = new Insets(4, 5, 4, 5);
+        var btnOptimize = new JButton("⚡ Run Interval Optimizer");
+        btnOptimize.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        btnOptimize.setBackground(new Color(16, 185, 129)); // Emerald 500
         btnOptimize.setForeground(Color.WHITE);
-        add(btnOptimize);
+        btnOptimize.setPreferredSize(new Dimension(260, 32));
+        btnOptimize.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnOptimize.setFocusPainted(false);
+        pnlForm.add(btnOptimize, gbc);
 
+        gbc.gridx = 0; gbc.gridy = 12;
+        var btnAll = new JButton("Show All Bookings");
+        btnAll.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        btnAll.setPreferredSize(new Dimension(260, 28));
+        btnAll.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        pnlForm.add(btnAll, gbc);
+
+        // Right Table Panel
+        var pnlRight = new JPanel(new BorderLayout());
+        pnlRight.setBackground(Color.WHITE);
+
+        var pnlTableBar = new JPanel(new BorderLayout());
+        pnlTableBar.setBackground(new Color(241, 245, 249));
+        pnlTableBar.setBorder(BorderFactory.createEmptyBorder(8, 14, 8, 14));
+
+        lblFilterStatus = new JLabel("Showing all registered appointments");
+        lblFilterStatus.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        lblFilterStatus.setForeground(new Color(71, 85, 105));
+        pnlTableBar.add(lblFilterStatus, BorderLayout.WEST);
+        pnlRight.add(pnlTableBar, BorderLayout.NORTH);
+
+        String[] cols = {"Appt ID", "Patient ID", "Doctor ID", "Date", "Time", "Status"};
+        tableModel = new DefaultTableModel(cols, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) { return false; }
+        };
+
+        table = new JTable(tableModel);
+        table.setRowHeight(28);
+        table.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        table.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 12));
+        table.getTableHeader().setBackground(new Color(248, 250, 252));
+
+        var scrollPane = new JScrollPane(table);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        pnlRight.add(scrollPane, BorderLayout.CENTER);
+
+        var splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, pnlForm, pnlRight);
+        splitPane.setDividerLocation(320);
+        splitPane.setDividerSize(1);
+        add(splitPane, BorderLayout.CENTER);
+
+        // Actions
         btnBook.addActionListener(e -> bookAppointment());
-        btnView.addActionListener(e -> viewAppointments());
         btnOptimize.addActionListener(e -> optimizeSchedule());
+        btnAll.addActionListener(e -> populateTable(controller.getAllAppointments(), false));
 
+        // Initial Load
+        populateTable(controller.getAllAppointments(), false);
         setVisible(true);
     }
 
@@ -118,6 +225,7 @@ public final class AppointmentFrame extends JFrame {
             }
 
             controller.bookAppointment(pid, did, aid, date, time);
+            populateTable(controller.getAllAppointments(), false);
 
             JOptionPane.showMessageDialog(this,
                     "Appointment #" + aid + " booked successfully for " + date + " at " + time + ".",
@@ -131,71 +239,46 @@ public final class AppointmentFrame extends JFrame {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Validation Error", JOptionPane.WARNING_MESSAGE);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this,
-                    "Please enter valid numeric IDs and proper Date/Time format (dd-MM-yyyy HH:mm).", "Invalid Input", JOptionPane.ERROR_MESSAGE);
+                    "Please enter valid numeric IDs and proper Date/Time format (dd-MM-yyyy HH:mm).",
+                    "Invalid Input", JOptionPane.ERROR_MESSAGE);
         }
-    }
-
-    private void viewAppointments() {
-        var list = controller.getAllAppointments();
-
-        if (list.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "No appointments currently on record.", "Appointment Records", JOptionPane.INFORMATION_MESSAGE);
-            return;
-        }
-
-        var sb = new StringBuilder("""
-                ========================================================================
-                                     HOSPITRON BOOKED APPOINTMENTS
-                ========================================================================
-                """);
-
-        for (Appointment a : list) {
-            sb.append(String.format("• Appt #%-5d | Patient ID: %-5d | Doctor ID: %-5d | Slot: %s %s | Status: %s\n",
-                    a.appointmentId(), a.patientId(), a.doctorId(), a.date(), a.time(), a.status()));
-        }
-
-        sb.append("========================================================================\n");
-        sb.append("Total Appointments: ").append(list.size());
-
-        JOptionPane.showMessageDialog(this, sb.toString(), "All Appointments", JOptionPane.INFORMATION_MESSAGE);
     }
 
     private void optimizeSchedule() {
-        try {
-            var optimized = controller.getOptimizedAppointments();
+        var opt = controller.getOptimizedAppointments();
+        populateTable(opt, true);
 
-            if (optimized.isEmpty()) {
-                JOptionPane.showMessageDialog(this,
-                        "No appointments available with valid Date & Time to optimize.",
-                        "Schedule Optimizer", JOptionPane.INFORMATION_MESSAGE);
-                return;
-            }
+        JOptionPane.showMessageDialog(this,
+                """
+                GREEDY INTERVAL SCHEDULING COMPLETE
+                =================================================
+                Total Confirmed Slots Selected : %d
+                Algorithm : Earliest Finish Time First (O(N log N))
+                Conflict Elimination : Non-overlapping appointments scheduled.
+                """.formatted(opt.size()),
+                "Optimization Result",
+                JOptionPane.INFORMATION_MESSAGE);
+    }
 
-            var sb = new StringBuilder("""
-                    ========================================================================
-                                    INTERVAL SCHEDULING (GREEDY OPTIMIZATION)
-                    ========================================================================
-                    Mutually compatible, conflict-free appointment schedule:
+    private void populateTable(List<Appointment> list, boolean isOptimized) {
+        tableModel.setRowCount(0);
+        for (Appointment a : list) {
+            tableModel.addRow(new Object[]{
+                    "#" + a.appointmentId(),
+                    "Patient " + a.patientId(),
+                    "Doctor " + a.doctorId(),
+                    a.date(),
+                    a.time(),
+                    isOptimized ? "✔ COMPATIBLE (Optimized)" : a.status()
+            });
+        }
 
-                    """);
-
-            for (Appointment a : optimized) {
-                sb.append(String.format("✔ Slot: %s %-5s -> Appt #%-5d (Patient ID: %-5d, Doctor ID: %-5d)\n",
-                        a.date(), a.time(), a.appointmentId(), a.patientId(), a.doctorId()));
-            }
-
-            sb.append("""
-
-                    ------------------------------------------------------------------------
-                    Algorithm: Greedy Activity/Interval Selection (O(N log N) Sorting by finish time)
-                    Optimal Non-Overlapping Slots Scheduled: %d
-                    ========================================================================
-                    """.formatted(optimized.size()));
-
-            JOptionPane.showMessageDialog(this, sb.toString(), "Optimal Conflict-Free Schedule", JOptionPane.INFORMATION_MESSAGE);
-
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Error optimizing schedule: " + ex.getMessage(), "Optimization Error", JOptionPane.ERROR_MESSAGE);
+        if (isOptimized) {
+            lblFilterStatus.setText("⚡ Filtered View: " + list.size() + " Conflict-Free Appointments (Interval Scheduling)");
+            lblFilterStatus.setForeground(new Color(16, 185, 129));
+        } else {
+            lblFilterStatus.setText("Showing all " + list.size() + " registered appointments");
+            lblFilterStatus.setForeground(new Color(71, 85, 105));
         }
     }
 }

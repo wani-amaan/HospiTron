@@ -113,6 +113,12 @@ public final class HospitalService {
         return emergencyQueue.poll();
     }
 
+    public List<EmergencyCase> getEmergencyQueueSnapshot() {
+        return emergencyQueue.stream()
+                .sorted((a, b) -> Integer.compare(b.severity(), a.severity()))
+                .toList();
+    }
+
     public int getEmergencyQueueSize() {
         return emergencyQueue.size();
     }
