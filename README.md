@@ -202,12 +202,11 @@ To demonstrate the full algorithmic capabilities of HospiTron in under 2 minutes
 Developed as an advanced implementation of **Object-Oriented Programming & Data Structures in Healthcare**:
 
 * **Project Supervisor**: **Dr. Shahid Sultan**, Assistant Professor
-* **Project Contributors**:
-  * **Amaan Qayum Wani** — *Lead Developer*
-  * **Faheel Mehraj**
+* **Lead Developer & Author**: **Amaan Qayum Wani**
 
 ---
 
 ## 📜 Project Declaration
 
-> *"This project was designed and implemented by the project team under the supervision of Dr. Shahid Sultan. It demonstrates the practical application of object-oriented programming, data structures, and algorithmic optimization in healthcare administration."*
+> *"This project was designed and implemented by Amaan Qayum Wani under the supervision of Dr. Shahid Sultan. It demonstrates the practical application of object-oriented programming, data structures, and algorithmic optimization in healthcare administration."*
+
