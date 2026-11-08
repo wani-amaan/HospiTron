@@ -47,7 +47,7 @@ public final class BillingService {
         return """
                 =========================================================
                               HOSPITRON HEALTHCARE SYSTEM
-                           Central University of Kashmir Wards
+                           Clinical & Inpatient Care Division
                                 OFFICIAL MEDICAL INVOICE
                 =========================================================
                 Invoice Date : %s
