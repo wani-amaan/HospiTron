@@ -91,6 +91,11 @@ public final class HospitalService {
         return scheduler.schedule(validList);
     }
 
+    public List<Appointment> getSlotDeduplicatedAppointments() {
+        var scheduler = new algorithm.GreedyScheduler();
+        return scheduler.schedule(new ArrayList<>(appointments));
+    }
+
     // ---------------- BILLING ----------------
 
     public double generateBill(int patientId, String patientName, boolean emergency) {

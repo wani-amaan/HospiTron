@@ -61,6 +61,10 @@ public final class HospitalController {
         return service.getOptimizedAppointments();
     }
 
+    public List<Appointment> getSlotDeduplicatedAppointments() {
+        return service.getSlotDeduplicatedAppointments();
+    }
+
     // ---------------- EMERGENCY ----------------
 
     public void addEmergency(int patientId, String name, int severity) {
